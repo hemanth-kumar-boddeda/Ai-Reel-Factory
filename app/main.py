@@ -21,6 +21,8 @@ from app.database import Base, engine, get_db
 from app.models.reel import ReelItem, ReelStatus
 from app.schemas.reel import ReelItemCreate, ReelItemUpdate, ReelItem
 from app.services.reel import ReelService
+from app.schemas.job import JobCreate, JobUpdate, Job
+from app.models.job import JobType, JobStatus
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -172,3 +174,42 @@ def get_reel(reel_id: int, service: ReelService = Depends(get_reel_service)):
     if not reel:
         raise HTTPException(status_code=404, detail="Reel not found")
     return reel
+
+def process_reel_job(job_id: int, reel_id: int):
+    # Create a new database session
+    from app.database import SessionLocal
+    with SessionLocal() as db:
+        service = ReelService(db)
+        try:
+            # Update job to processing
+            service.update_job(job_id, JobUpdate(status=JobStatus.PROCESSING, progress=10))
+            # Process the reel
+            processed_reel_id = service.process_reel_by_id(reel_id)
+            if processed_reel_id:
+                # Update job to completed
+                service.update_job(job_id, JobUpdate(status=JobStatus.COMPLETED, progress=100, result=f"Reel {processed_reel_id} processed successfully"))
+            else:
+                service.update_job(job_id, JobUpdate(status=JobStatus.FAILED, error="Failed to process reel"))
+        except Exception as e:
+            service.update_job(job_id, JobUpdate(status=JobStatus.FAILED, error=str(e)))
+
+@app.post("/api/reels/{reel_id}/render", response_model=Job)
+def render_reel(reel_id: int, background_tasks: BackgroundTasks, service: ReelService = Depends(get_reel_service)):
+    """Trigger rendering for a specific reel."""
+    # Check if reel exists
+    reel = service.get_reel(reel_id)
+    if not reel:
+        raise HTTPException(status_code=404, detail="Reel not found")
+    # Create a job for rendering
+    job = service.create_job(reel_id, JobType.RENDER)
+    # Add background task to process the reel
+    background_tasks.add_task(process_reel_job, job_id=job.id, reel_id=reel_id)
+    return job
+
+@app.get("/api/jobs/{job_id}", response_model=Job)
+def get_job(job_id: int, service: ReelService = Depends(get_reel_service)):
+    """Get a job by ID."""
+    job = service.get_job(job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    return job

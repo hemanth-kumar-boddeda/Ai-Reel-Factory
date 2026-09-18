@@ -10,6 +10,14 @@ class ReelItemBase(BaseModel):
     summary: Optional[str] = None
     identity_reference_path: Optional[str] = None
     score: Optional[int] = None
+    # Configuration fields (optional for create, but we can include them as optional)
+    hook: Optional[str] = None
+    duration: Optional[int] = None  # in seconds
+    tone: Optional[str] = None
+    visual_style: Optional[str] = None
+    voice: Optional[str] = None
+    captions: Optional[str] = None
+    cta: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -32,7 +40,14 @@ class ReelItemUpdate(BaseModel):
     voice_data: Optional[str] = None
     qa_score: Optional[float] = None
     published_url: Optional[HttpUrl] = None
-    identity_reference_path: Optional[str] = None
+    # Configuration fields
+    hook: Optional[str] = None
+    duration: Optional[int] = None
+    tone: Optional[str] = None
+    visual_style: Optional[str] = None
+    voice: Optional[str] = None
+    captions: Optional[str] = None
+    cta: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -54,6 +69,8 @@ class ReelItem(ReelItemInDBBase):
     qa_score: Optional[float] = None
     published_url: Optional[HttpUrl] = None
     identity_reference_path: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
 
 class ReelItemInDB(ReelItemInDBBase):
     research_data: Optional[str] = None

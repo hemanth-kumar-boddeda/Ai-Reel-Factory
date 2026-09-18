@@ -26,7 +26,14 @@ class ReelRepository:
             url=str(obj_in.url),
             summary=obj_in.summary,
             score=obj_in.score,
-            status=ReelStatus.DISCOVERED.value
+            status=ReelStatus.DISCOVERED.value,
+            hook=obj_in.hook,
+            duration=obj_in.duration,
+            tone=obj_in.tone,
+            visual_style=obj_in.visual_style,
+            voice=obj_in.voice,
+            captions=obj_in.captions,
+            cta=obj_in.cta,
         )
         self.db.add(db_obj)
         self.db.commit()

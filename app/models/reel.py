@@ -2,6 +2,7 @@ from datetime import datetime
 from enum import Enum
 from app.database import Base
 from sqlalchemy import Column, Integer, String, Text, Float, DateTime, Boolean
+from sqlalchemy.orm import relationship
 
 class ReelStatus(str, Enum):
     DISCOVERED = "DISCOVERED"
@@ -39,3 +40,15 @@ class ReelItem(Base):
     voice_data = Column(Text, nullable=True)
     qa_score = Column(Float, nullable=True)
     published_url = Column(String, nullable=True)
+
+    # User configuration fields
+    hook = Column(String, nullable=True)
+    duration = Column(Integer, nullable=True)  # in seconds
+    tone = Column(String, nullable=True)
+    visual_style = Column(String, nullable=True)
+    voice = Column(String, nullable=True)
+    captions = Column(String, nullable=True)
+    cta = Column(String, nullable=True)
+
+    # Relationship to jobs
+    jobs = relationship("JobItem", back_populates="reel")

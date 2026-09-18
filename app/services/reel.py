@@ -1,8 +1,11 @@
 from typing import List, Optional
 from sqlalchemy.orm import Session
 from app.repositories.reel import ReelRepository
+from app.repositories.job import JobRepository
 from app.models.reel import ReelItem, ReelStatus
 from app.schemas.reel import ReelItemCreate, ReelItemUpdate
+from app.models.job import JobItem, JobStatus, JobType
+from app.schemas.job import JobCreate, JobUpdate
 from app.core.config import settings
 import subprocess
 import os
@@ -19,6 +22,7 @@ from datetime import datetime, timezone
 class ReelService:
     def __init__(self, db: Session):
         self.repository = ReelRepository(db)
+        self.job_repository = JobRepository(db)
         self.db = db
 
     def get_reels(self, skip: int = 0, limit: int = 100) -> List[ReelItem]:
@@ -111,7 +115,7 @@ class ReelService:
             raise Exception(f"FFmpeg failed: {result.stderr}")
 
     def process_pipeline(self) -> Optional[int]:
-        """Main pipeline processing function"""
+        """Main pipeline processing function (global, processes highest-scoring discovered reel)"""
         # Ensure tables exist
         from app.database import Base, engine
         Base.metadata.create_all(bind=engine)
@@ -216,3 +220,125 @@ class ReelService:
             self.repository.update(row, ReelItemUpdate(status=ReelStatus.FAILED.value))
             self.db.commit()
             return None
+
+    def process_reel_by_id(self, reel_id: int) -> Optional[int]:
+        """Process a specific reel by ID through the pipeline."""
+        # Ensure tables exist
+        from app.database import Base, engine
+        Base.metadata.create_all(bind=engine)
+
+        # Get the reel by ID
+        reel = self.repository.get(reel_id)
+        if not reel:
+            return None
+
+        # Optionally, check if the reel is in a state that can be processed (e.g., DISCOVERED or configured)
+        # We'll allow any status, but the pipeline expects to start from researching.
+        # We'll reset the reel to RESEARCHING and proceed.
+
+        out_path = Path('./data/output') / f"reel_{reel.id}.mp4"
+
+        try:
+            # Update status to researching
+            self.repository.update(reel, ReelItemUpdate(status=ReelStatus.RESEARCHING.value))
+
+            # Simulate research phase
+            time.sleep(1)
+            self.repository.update(reel, ReelItemUpdate(
+                status=ReelStatus.SCRIPTING.value,
+                research_data='{"topic": "AI Research", "key_points": ["Point 1", "Point 2"]}'
+            ))
+
+            # Simulate scripting phase
+            time.sleep(1)
+            self.repository.update(reel, ReelItemUpdate(
+                status=ReelStatus.STORYBOARDING.value,
+                script='This is a sample script for the AI Reel Factory. It demonstrates the pipeline capabilities.'
+            ))
+
+            # Simulate storyboard phase
+            time.sleep(1)
+            self.repository.update(reel, ReelItemUpdate(
+                status=ReelStatus.ASSET_GENERATION.value,
+                storyboard='[Scene 1: Introduction][Scene 2: Main Content][Scene 3: Conclusion]'
+            ))
+
+            # Simulate asset generation
+            time.sleep(1)
+            self.repository.update(reel, ReelItemUpdate(
+                status=ReelStatus.VOICE_GENERATION.value,
+                assets_data='{"images": ["img1.jpg", "img2.jpg"], "background music": "ambient.mp3"}'
+            ))
+
+            # Simulate voice generation
+            time.sleep(1)
+            self.repository.update(reel, ReelItemUpdate(
+                status=ReelStatus.RENDERING.value,
+                voice_data='{"voice": "neutral", "text": "Sample voiceover text"}'
+            ))
+
+            # Generate video
+            self.make_video(reel.title, reel.summary, out_path)
+
+            # Simulate QA
+            time.sleep(1)
+            self.repository.update(reel, ReelItemUpdate(
+                status=ReelStatus.QA.value,
+                qa_score=95.0
+            ))
+
+            # Mark as ready to publish
+            self.repository.update(reel, ReelItemUpdate(
+                status=ReelStatus.READY_TO_PUBLISH.value,
+                video_path=str(out_path)
+            ))
+
+            self.db.commit()
+            return reel.id
+
+        except Exception as e:
+            print(f'Pipeline error for reel {reel.id}: {e}')
+            self.repository.update(reel, ReelItemUpdate(status=ReelStatus.FAILED.value))
+            self.db.commit()
+            return None
+
+    # Job-related methods
+    def create_job(self, reel_id: int, job_type: JobType) -> Optional[JobItem]:
+        """Create a new job for a reel."""
+        # Check if the reel exists
+        reel = self.repository.get(reel_id)
+        if not reel:
+            return None
+
+        # Check if there is already a pending or processing job for this reel
+        existing_jobs = self.job_repository.get_by_reel_id(reel_id)
+        for job in existing_jobs:
+            if job.status in [JobStatus.PENDING.value, JobStatus.PROCESSING.value]:
+                # Return the existing job to prevent duplicate processing
+                return job
+
+        # Create a new job
+        job_in = JobCreate(
+            reel_id=reel_id,
+            type=job_type,
+            status=JobStatus.PENDING,
+            progress=0,
+            result=None,
+            error=None
+        )
+        return self.job_repository.create(job_in)
+
+    def update_job(self, job_id: int, job_update: JobUpdate) -> Optional[JobItem]:
+        """Update a job."""
+        job = self.job_repository.get(job_id)
+        if not job:
+            return None
+        return self.job_repository.update(job, job_update)
+
+    def get_job(self, job_id: int) -> Optional[JobItem]:
+        """Get a job by ID."""
+        return self.job_repository.get(job_id)
+
+    def get_jobs_by_reel_id(self, reel_id: int) -> List[JobItem]:
+        """Get all jobs for a reel."""
+        return self.job_repository.get_by_reel_id(reel_id)
