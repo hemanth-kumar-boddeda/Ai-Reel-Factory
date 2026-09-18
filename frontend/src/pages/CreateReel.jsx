@@ -25,7 +25,7 @@ export default function CreateReel() {
 
     try {
       // Create a reel with the idea as title and vision as summary
-      const reelData {
+      const reelData = {
         source: "User Input",
         title: idea.trim(),
         url: `https://user-input-${Date.now()}`, // Generate a unique URL

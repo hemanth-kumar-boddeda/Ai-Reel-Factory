@@ -18,27 +18,27 @@ class MockVideoProvider(BaseVideoProvider):
     async def generate_video_asset(
         self,
         prompt: str,
-        identity_reference_path: Optional[Path] = None,
         output_path: Path,
+        identity_reference_path: Optional[Path] = None,
         duration: int = 12,
         aspect_ratio: str = "9:16"
     ) -> bool:
         """
         Generate a mock video asset (a color video clip).
-        
+
         Args:
             prompt: Text prompt for video generation (ignored in mock)
             identity_reference_path: Optional path to reference image for identity consistency (ignored in mock)
             output_path: Path where the generated video asset should be saved
             duration: Duration of video asset in seconds
             aspect_ratio: Aspect ratio of video asset (e.g., "9:16", "16:9")
-            
+
         Returns:
             True if video asset generation was successful, False otherwise
         """
         # Simulate some delay
         await asyncio.sleep(0.1)
-        
+
         # We'll use ffmpeg to generate a color video asset if available.
         # If ffmpeg is not available, we'll create a dummy file.
         # But note: the existing codebase already uses ffmpeg, so we assume it's available.
@@ -51,7 +51,7 @@ class MockVideoProvider(BaseVideoProvider):
             else:
                 # Default to 9:16
                 width, height = 1080, 1920
-            
+
             # Use ffmpeg to generate a solid color video
             # We'll use a dark color to match the existing background
             cmd = [
@@ -61,7 +61,7 @@ class MockVideoProvider(BaseVideoProvider):
                 '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-movflags', '+faststart',
                 str(output_path)
             ]
-            
+
             # Run the command
             result = await asyncio.create_subprocess_exec(
                 *cmd,
@@ -69,7 +69,7 @@ class MockVideoProvider(BaseVideoProvider):
                 stderr=asyncio.subprocess.PIPE
             )
             stdout, stderr = await result.communicate()
-            
+
             if result.returncode != 0:
                 # If ffmpeg fails, fall back to creating a dummy file
                 print(f"FFmpeg failed to generate mock video: {stderr.decode()}")

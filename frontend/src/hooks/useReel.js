@@ -9,30 +9,30 @@ export function useReel() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const [reelsRes, statsRes] = await Promise.all([
-          axios.get(`${API_BASE}/api/reels`),
-          axios.get(`${API_BASE}/api/stats`)
-        ]);
-        setReels(reelsRes.data);
-        setStats(statsRes.data);
-      } catch (err) {
-        console.error('Error fetching data:', err);
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const [reelsRes, statsRes] = await Promise.all([
+        axios.get(`${API_BASE}/api/reels`),
+        axios.get(`${API_BASE}/api/stats`)
+      ]);
+      setReels(reelsRes.data);
+      setStats(statsRes.data);
+    } catch (err) {
+      console.error('Error fetching data:', err);
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
     // Optionally, set up an interval to refresh data
     const interval = setInterval(fetchData, 5000);
     return () => clearInterval(interval);
   }, []);
 
-  return { reels, stats, loading, error };
+  return { reels, stats, loading, error, refetch: fetchData };
 }

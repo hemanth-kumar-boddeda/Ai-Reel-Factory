@@ -1,7 +1,4 @@
 /* App-specific styles */
-.page-container {
-  padding: 2rem;
-}
 
 .page-title {
   margin-bottom: 1.5rem;
@@ -236,9 +233,6 @@
 }
 
 @media (max-width: 768px) {
-  .page-container {
-    padding: 1rem;
-  }
 
   .page-title {
     font-size: 1.5rem;
