@@ -1,0 +1,10 @@
+{
+  "name": "AI Reel Factory - Scheduled MVP",
+  "nodes": [
+    {"parameters":{"rule":{"interval":[{"field":"hours","hoursInterval":2}]}},"id":"1","name":"Every 2 Hours","type":"n8n-nodes-base.scheduleTrigger","typeVersion":1.2,"position":[0,0]},
+    {"parameters":{"method":"POST","url":"http://reel-factory:8000/run","options":{}},"id":"2","name":"Run Reel Pipeline","type":"n8n-nodes-base.httpRequest","typeVersion":4.2,"position":[240,0]}
+  ],
+  "connections":{"Every 2 Hours":{"main":[[{"node":"Run Reel Pipeline","type":"main","index":0}]]}},
+  "active":false,
+  "settings":{"executionOrder":"v1"}
+}

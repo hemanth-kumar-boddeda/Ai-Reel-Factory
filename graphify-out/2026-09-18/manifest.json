@@ -1,0 +1,566 @@
+{
+  "app/core/config.py": {
+    "mtime": 1789648527.3883457,
+    "seen": 1789702268.8649874,
+    "ast_hash": "dcbdb5c6924b4e3443b3f22b9d1cc04d",
+    "semantic_hash": "dcbdb5c6924b4e3443b3f22b9d1cc04d"
+  },
+  "app/database.py": {
+    "mtime": 1789648305.8040335,
+    "seen": 1789702268.8649943,
+    "ast_hash": "d2893237a47c6432dd063292874a4c92",
+    "semantic_hash": "d2893237a47c6432dd063292874a4c92"
+  },
+  "app/main.py": {
+    "mtime": 1789703404.0198424,
+    "seen": 1789707449.8356457,
+    "ast_hash": "7617357f64d0aa7e27b5de1ded835697",
+    "semantic_hash": "7617357f64d0aa7e27b5de1ded835697"
+  },
+  "app/models/reel.py": {
+    "mtime": 1789648329.3545175,
+    "seen": 1789702268.864999,
+    "ast_hash": "b065f78fbb219886a4c5101de8fdd7e8",
+    "semantic_hash": "b065f78fbb219886a4c5101de8fdd7e8"
+  },
+  "app/repositories/reel.py": {
+    "mtime": 1789648353.5479853,
+    "seen": 1789702268.8650007,
+    "ast_hash": "d1afa59af0b3683f7c88c97da5dbaac3",
+    "semantic_hash": "d1afa59af0b3683f7c88c97da5dbaac3"
+  },
+  "app/schemas/reel.py": {
+    "mtime": 1789649247.1716409,
+    "seen": 1789702268.865002,
+    "ast_hash": "008033d3064bd7ec2b5bfec1079d2e0e",
+    "semantic_hash": "008033d3064bd7ec2b5bfec1079d2e0e"
+  },
+  "app/services/reel.py": {
+    "mtime": 1789704379.2262487,
+    "seen": 1789707449.8364148,
+    "ast_hash": "2ca2e9f8a412417348037c3ee14721e5",
+    "semantic_hash": "2ca2e9f8a412417348037c3ee14721e5"
+  },
+  "app/static/js/main.js": {
+    "mtime": 1789649768.2709804,
+    "seen": 1789702268.865005,
+    "ast_hash": "73bc52b43349574fe350aee6e00d6289",
+    "semantic_hash": "73bc52b43349574fe350aee6e00d6289"
+  },
+  "frontend/.oxlintrc.json": {
+    "mtime": 1789652544.110433,
+    "seen": 1789702268.865006,
+    "ast_hash": "5e6e3cea3e89137071c142dd7835b0ef",
+    "semantic_hash": "5e6e3cea3e89137071c142dd7835b0ef"
+  },
+  "frontend/package.json": {
+    "mtime": 1789653508.8429134,
+    "seen": 1789702268.8650076,
+    "ast_hash": "3c5ec2bbc4e934fd759a812375a57ecf",
+    "semantic_hash": "3c5ec2bbc4e934fd759a812375a57ecf"
+  },
+  "frontend/src/App.jsx": {
+    "mtime": 1789669843.4771,
+    "seen": 1789702268.8650088,
+    "ast_hash": "d1e95161956fc9bb03beb43f764fa936",
+    "semantic_hash": "d1e95161956fc9bb03beb43f764fa936"
+  },
+  "frontend/src/components/ErrorBoundary.jsx": {
+    "mtime": 1789669834.8982894,
+    "seen": 1789702268.8650107,
+    "ast_hash": "36f48d44cbc1661ab8027cb41fb634a6",
+    "semantic_hash": "36f48d44cbc1661ab8027cb41fb634a6"
+  },
+  "frontend/src/components/dashboard/Metrics.jsx": {
+    "mtime": 1789653454.9156547,
+    "seen": 1789702268.8650124,
+    "ast_hash": "84868a74cddf1e35e3a414bf2585882c",
+    "semantic_hash": "84868a74cddf1e35e3a414bf2585882c"
+  },
+  "frontend/src/components/reel/Reel3D.jsx": {
+    "mtime": 1789671031.2027915,
+    "seen": 1789702268.8650138,
+    "ast_hash": "33cc129b391052021e330ee5ab46d412",
+    "semantic_hash": "33cc129b391052021e330ee5ab46d412"
+  },
+  "frontend/src/components/reel/ReelCard.jsx": {
+    "mtime": 1789671008.1906748,
+    "seen": 1789702268.865015,
+    "ast_hash": "a2f8a46cb229bb85e4e7d7d4561df9af",
+    "semantic_hash": "a2f8a46cb229bb85e4e7d7d4561df9af"
+  },
+  "frontend/src/hooks/useReel.js": {
+    "mtime": 1789670939.9441566,
+    "seen": 1789702268.8650165,
+    "ast_hash": "811aff377b780f6f7236a5929ee5e66f",
+    "semantic_hash": "811aff377b780f6f7236a5929ee5e66f"
+  },
+  "frontend/src/main.jsx": {
+    "mtime": 1789656597.1592722,
+    "seen": 1789702268.865018,
+    "ast_hash": "7efda5efe7e98dd1a5b8c3d029b988ef",
+    "semantic_hash": "7efda5efe7e98dd1a5b8c3d029b988ef"
+  },
+  "frontend/src/pages/Analytics.jsx": {
+    "mtime": 1789671183.955737,
+    "seen": 1789702268.8650193,
+    "ast_hash": "8b30d630e168527fec3176ebc96d3dc6",
+    "semantic_hash": "8b30d630e168527fec3176ebc96d3dc6"
+  },
+  "frontend/src/pages/Calendar.jsx": {
+    "mtime": 1789671191.994982,
+    "seen": 1789702268.8650208,
+    "ast_hash": "df41aa44b4a17956243b6473b19c0e5f",
+    "semantic_hash": "df41aa44b4a17956243b6473b19c0e5f"
+  },
+  "frontend/src/pages/CreateReel.jsx": {
+    "mtime": 1789702559.6041496,
+    "seen": 1789707449.8395057,
+    "ast_hash": "097589b9061ac28b33af3a1eb6841754",
+    "semantic_hash": "097589b9061ac28b33af3a1eb6841754"
+  },
+  "frontend/src/pages/Editor.jsx": {
+    "mtime": 1789702553.1464024,
+    "seen": 1789707449.8395083,
+    "ast_hash": "432e5b2f14a828f10d914b1679c76f51",
+    "semantic_hash": "432e5b2f14a828f10d914b1679c76f51"
+  },
+  "frontend/src/pages/Home.jsx": {
+    "mtime": 1789671036.872136,
+    "seen": 1789702268.865025,
+    "ast_hash": "b7306f9a18198e44faf7f717658238b3",
+    "semantic_hash": "b7306f9a18198e44faf7f717658238b3"
+  },
+  "frontend/src/pages/Jobs.jsx": {
+    "mtime": 1789671199.1569805,
+    "seen": 1789702268.8650267,
+    "ast_hash": "f074aee3201ec72895d596af58378b4a",
+    "semantic_hash": "f074aee3201ec72895d596af58378b4a"
+  },
+  "frontend/src/pages/Library.jsx": {
+    "mtime": 1789671047.8781557,
+    "seen": 1789702268.8650281,
+    "ast_hash": "781e0b476f1a93c9589690f8b19490d4",
+    "semantic_hash": "781e0b476f1a93c9589690f8b19490d4"
+  },
+  "frontend/src/pages/Templates.jsx": {
+    "mtime": 1789671205.0507145,
+    "seen": 1789702268.8650293,
+    "ast_hash": "fb97fc8eebe3f5a23536a03632a82302",
+    "semantic_hash": "fb97fc8eebe3f5a23536a03632a82302"
+  },
+  "frontend/vite.config.js": {
+    "mtime": 1789652544.1449604,
+    "seen": 1789702268.865031,
+    "ast_hash": "5d54447744c19ccd28638a5c668d15ea",
+    "semantic_hash": "5d54447744c19ccd28638a5c668d15ea"
+  },
+  "frontend_backup_20260917_235340/.oxlintrc.json": {
+    "mtime": 1789669623.9534602,
+    "seen": 1789702268.8650322,
+    "ast_hash": "5e6e3cea3e89137071c142dd7835b0ef",
+    "semantic_hash": "5e6e3cea3e89137071c142dd7835b0ef"
+  },
+  "frontend_backup_20260917_235340/package.json": {
+    "mtime": 1789669623.9994526,
+    "seen": 1789702268.8650334,
+    "ast_hash": "3c5ec2bbc4e934fd759a812375a57ecf",
+    "semantic_hash": "3c5ec2bbc4e934fd759a812375a57ecf"
+  },
+  "frontend_backup_20260917_235340/src/App.jsx": {
+    "mtime": 1789669623.9592447,
+    "seen": 1789702268.865035,
+    "ast_hash": "8e25cdfa53a59b2786496cb788e67a2b",
+    "semantic_hash": "8e25cdfa53a59b2786496cb788e67a2b"
+  },
+  "frontend_backup_20260917_235340/src/components/dashboard/Metrics.jsx": {
+    "mtime": 1789669623.9734156,
+    "seen": 1789702268.8650362,
+    "ast_hash": "84868a74cddf1e35e3a414bf2585882c",
+    "semantic_hash": "84868a74cddf1e35e3a414bf2585882c"
+  },
+  "frontend_backup_20260917_235340/src/components/reel/Reel3D.jsx": {
+    "mtime": 1789669623.9777124,
+    "seen": 1789702268.8650377,
+    "ast_hash": "ffa613cd6088ca0bde54bd220d03a39c",
+    "semantic_hash": "ffa613cd6088ca0bde54bd220d03a39c"
+  },
+  "frontend_backup_20260917_235340/src/components/reel/ReelCard.jsx": {
+    "mtime": 1789669623.9762013,
+    "seen": 1789702268.8650389,
+    "ast_hash": "602e50fdd809146579801f68698f0f67",
+    "semantic_hash": "602e50fdd809146579801f68698f0f67"
+  },
+  "frontend_backup_20260917_235340/src/hooks/useReel.js": {
+    "mtime": 1789669623.964537,
+    "seen": 1789702268.86504,
+    "ast_hash": "a7c7e71c83af219d10f68caa6c9ed5ef",
+    "semantic_hash": "a7c7e71c83af219d10f68caa6c9ed5ef"
+  },
+  "frontend_backup_20260917_235340/src/main.jsx": {
+    "mtime": 1789669623.9958353,
+    "seen": 1789702268.865042,
+    "ast_hash": "7efda5efe7e98dd1a5b8c3d029b988ef",
+    "semantic_hash": "7efda5efe7e98dd1a5b8c3d029b988ef"
+  },
+  "frontend_backup_20260917_235340/src/pages/Analytics.jsx": {
+    "mtime": 1789669623.981201,
+    "seen": 1789702268.8650434,
+    "ast_hash": "ebc43a59cf3d6eff2a05a53cee8381aa",
+    "semantic_hash": "ebc43a59cf3d6eff2a05a53cee8381aa"
+  },
+  "frontend_backup_20260917_235340/src/pages/Calendar.jsx": {
+    "mtime": 1789669623.987859,
+    "seen": 1789702268.8650448,
+    "ast_hash": "e67a6c3743fc20e8a94c9802033d719d",
+    "semantic_hash": "e67a6c3743fc20e8a94c9802033d719d"
+  },
+  "frontend_backup_20260917_235340/src/pages/CreateReel.jsx": {
+    "mtime": 1789669623.9848375,
+    "seen": 1789702268.865046,
+    "ast_hash": "9a6bf8368ef56dd14aaee966e089bf3d",
+    "semantic_hash": "9a6bf8368ef56dd14aaee966e089bf3d"
+  },
+  "frontend_backup_20260917_235340/src/pages/Editor.jsx": {
+    "mtime": 1789669623.986849,
+    "seen": 1789702268.8650472,
+    "ast_hash": "6f11582c8599b6921b34303ce1ec0fbd",
+    "semantic_hash": "6f11582c8599b6921b34303ce1ec0fbd"
+  },
+  "frontend_backup_20260917_235340/src/pages/Home.jsx": {
+    "mtime": 1789669623.9917088,
+    "seen": 1789702268.865049,
+    "ast_hash": "6e52ba616c15d7e21809e165311862fd",
+    "semantic_hash": "6e52ba616c15d7e21809e165311862fd"
+  },
+  "frontend_backup_20260917_235340/src/pages/Jobs.jsx": {
+    "mtime": 1789669623.987859,
+    "seen": 1789702268.86505,
+    "ast_hash": "ceacba87e1a2f0395a8e4623c2066b1f",
+    "semantic_hash": "ceacba87e1a2f0395a8e4623c2066b1f"
+  },
+  "frontend_backup_20260917_235340/src/pages/Library.jsx": {
+    "mtime": 1789669623.982766,
+    "seen": 1789702268.8650515,
+    "ast_hash": "169257791b8b5abde48d63ad93461dd7",
+    "semantic_hash": "169257791b8b5abde48d63ad93461dd7"
+  },
+  "frontend_backup_20260917_235340/src/pages/Templates.jsx": {
+    "mtime": 1789669623.993823,
+    "seen": 1789702268.865053,
+    "ast_hash": "a0a5fa6063f8afb7ba187a011c452710",
+    "semantic_hash": "a0a5fa6063f8afb7ba187a011c452710"
+  },
+  "frontend_backup_20260917_235340/vite.config.js": {
+    "mtime": 1789669623.9152803,
+    "seen": 1789702268.8650541,
+    "ast_hash": "5d54447744c19ccd28638a5c668d15ea",
+    "semantic_hash": "5d54447744c19ccd28638a5c668d15ea"
+  },
+  "frontend_hardening_backup_20260918_001830/.oxlintrc.json": {
+    "mtime": 1789670930.922369,
+    "seen": 1789702268.8650568,
+    "ast_hash": "5e6e3cea3e89137071c142dd7835b0ef",
+    "semantic_hash": "5e6e3cea3e89137071c142dd7835b0ef"
+  },
+  "frontend_hardening_backup_20260918_001830/package.json": {
+    "mtime": 1789670930.9734335,
+    "seen": 1789702268.865058,
+    "ast_hash": "3c5ec2bbc4e934fd759a812375a57ecf",
+    "semantic_hash": "3c5ec2bbc4e934fd759a812375a57ecf"
+  },
+  "frontend_hardening_backup_20260918_001830/src/App.jsx": {
+    "mtime": 1789670930.9718459,
+    "seen": 1789702268.8650594,
+    "ast_hash": "d1e95161956fc9bb03beb43f764fa936",
+    "semantic_hash": "d1e95161956fc9bb03beb43f764fa936"
+  },
+  "frontend_hardening_backup_20260918_001830/src/components/ErrorBoundary.jsx": {
+    "mtime": 1789670930.9376702,
+    "seen": 1789702268.8650606,
+    "ast_hash": "36f48d44cbc1661ab8027cb41fb634a6",
+    "semantic_hash": "36f48d44cbc1661ab8027cb41fb634a6"
+  },
+  "frontend_hardening_backup_20260918_001830/src/components/dashboard/Metrics.jsx": {
+    "mtime": 1789670930.9392476,
+    "seen": 1789702268.865062,
+    "ast_hash": "84868a74cddf1e35e3a414bf2585882c",
+    "semantic_hash": "84868a74cddf1e35e3a414bf2585882c"
+  },
+  "frontend_hardening_backup_20260918_001830/src/components/reel/Reel3D.jsx": {
+    "mtime": 1789670930.9433467,
+    "seen": 1789702268.865063,
+    "ast_hash": "8c6d4d2beaefeb589f4a1f6e01aa7e55",
+    "semantic_hash": "8c6d4d2beaefeb589f4a1f6e01aa7e55"
+  },
+  "frontend_hardening_backup_20260918_001830/src/components/reel/ReelCard.jsx": {
+    "mtime": 1789670930.941336,
+    "seen": 1789702268.8650644,
+    "ast_hash": "195259e91a1a35bec07ff55bcba814d1",
+    "semantic_hash": "195259e91a1a35bec07ff55bcba814d1"
+  },
+  "frontend_hardening_backup_20260918_001830/src/hooks/useReel.js": {
+    "mtime": 1789670930.9284627,
+    "seen": 1789702268.8650658,
+    "ast_hash": "a7c7e71c83af219d10f68caa6c9ed5ef",
+    "semantic_hash": "a7c7e71c83af219d10f68caa6c9ed5ef"
+  },
+  "frontend_hardening_backup_20260918_001830/src/main.jsx": {
+    "mtime": 1789670930.9594767,
+    "seen": 1789702268.8650672,
+    "ast_hash": "7efda5efe7e98dd1a5b8c3d029b988ef",
+    "semantic_hash": "7efda5efe7e98dd1a5b8c3d029b988ef"
+  },
+  "frontend_hardening_backup_20260918_001830/src/pages/Analytics.jsx": {
+    "mtime": 1789670930.950729,
+    "seen": 1789702268.865069,
+    "ast_hash": "687e0a6e4d67d893de7a655d8538f4db",
+    "semantic_hash": "687e0a6e4d67d893de7a655d8538f4db"
+  },
+  "frontend_hardening_backup_20260918_001830/src/pages/Calendar.jsx": {
+    "mtime": 1789670930.9453557,
+    "seen": 1789702268.86507,
+    "ast_hash": "4ba361b2b849a1ce45553b1d7105b0ad",
+    "semantic_hash": "4ba361b2b849a1ce45553b1d7105b0ad"
+  },
+  "frontend_hardening_backup_20260918_001830/src/pages/CreateReel.jsx": {
+    "mtime": 1789670930.9547522,
+    "seen": 1789702268.8650715,
+    "ast_hash": "b0ba65aeeb41c160cb96a5df0a68fcf4",
+    "semantic_hash": "b0ba65aeeb41c160cb96a5df0a68fcf4"
+  },
+  "frontend_hardening_backup_20260918_001830/src/pages/Editor.jsx": {
+    "mtime": 1789670930.9527426,
+    "seen": 1789702268.865073,
+    "ast_hash": "9053fef6f2025ab92e3cbebd6b3f9bee",
+    "semantic_hash": "9053fef6f2025ab92e3cbebd6b3f9bee"
+  },
+  "frontend_hardening_backup_20260918_001830/src/pages/Home.jsx": {
+    "mtime": 1789670930.9584532,
+    "seen": 1789702268.8650744,
+    "ast_hash": "518df2835c34682f20fb06045c2f7e64",
+    "semantic_hash": "518df2835c34682f20fb06045c2f7e64"
+  },
+  "frontend_hardening_backup_20260918_001830/src/pages/Jobs.jsx": {
+    "mtime": 1789670930.9487064,
+    "seen": 1789702268.865076,
+    "ast_hash": "0aecb47fe49e82e64d02aa38529d1753",
+    "semantic_hash": "0aecb47fe49e82e64d02aa38529d1753"
+  },
+  "frontend_hardening_backup_20260918_001830/src/pages/Library.jsx": {
+    "mtime": 1789670930.956331,
+    "seen": 1789702268.8650773,
+    "ast_hash": "4c8193b2ca8508a2eaab3c22a091aea4",
+    "semantic_hash": "4c8193b2ca8508a2eaab3c22a091aea4"
+  },
+  "frontend_hardening_backup_20260918_001830/src/pages/Templates.jsx": {
+    "mtime": 1789670930.9453557,
+    "seen": 1789702268.8650784,
+    "ast_hash": "9af2c2b33d865dca189e1853fd1a917c",
+    "semantic_hash": "9af2c2b33d865dca189e1853fd1a917c"
+  },
+  "frontend_hardening_backup_20260918_001830/vite.config.js": {
+    "mtime": 1789670930.9129987,
+    "seen": 1789702268.8650799,
+    "ast_hash": "5d54447744c19ccd28638a5c668d15ea",
+    "semantic_hash": "5d54447744c19ccd28638a5c668d15ea"
+  },
+  "n8n/workflow.json": {
+    "mtime": 1789548666.0,
+    "seen": 1789702268.865081,
+    "ast_hash": "507eb6af5dcc6eaacfe0b5bf9019d5a8",
+    "semantic_hash": "507eb6af5dcc6eaacfe0b5bf9019d5a8"
+  },
+  "src/main.jsx": {
+    "mtime": 1789665817.7524974,
+    "seen": 1789702268.8650827,
+    "ast_hash": "59a3df69660d36d9a93a022e1f5d8c5d",
+    "semantic_hash": "59a3df69660d36d9a93a022e1f5d8c5d"
+  },
+  "data/output/reel_4.mp4": {
+    "mtime": 1789654393.453293,
+    "seen": 1789702268.865084,
+    "ast_hash": "06243e87707f8c0a47b84ca138e8f491",
+    "semantic_hash": "06243e87707f8c0a47b84ca138e8f491"
+  },
+  "data/output/reel_6.mp4": {
+    "mtime": 1789652128.2316966,
+    "seen": 1789702268.8650851,
+    "ast_hash": "27a6d87c255d747e81cc493057a4c4f5",
+    "semantic_hash": "27a6d87c255d747e81cc493057a4c4f5"
+  },
+  "data/output/reel_8.mp4": {
+    "mtime": 1789652016.0700352,
+    "seen": 1789702268.8650866,
+    "ast_hash": "0fc9500a5adabec2b0c580e4f173e498",
+    "semantic_hash": "0fc9500a5adabec2b0c580e4f173e498"
+  },
+  "C\uf03aUsersRATNAMDownloadsai-reel-factory-working-mvpai-reel-factory-workingappmain.py": {
+    "mtime": 1789702920.1081555,
+    "seen": 1789707449.8349073,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "backup_checkpoint_phase2_1/app/core/config.py": {
+    "mtime": 1789707040.1450844,
+    "seen": 1789707449.836673,
+    "ast_hash": "dcbdb5c6924b4e3443b3f22b9d1cc04d",
+    "semantic_hash": "dcbdb5c6924b4e3443b3f22b9d1cc04d"
+  },
+  "backup_checkpoint_phase2_1/app/database.py": {
+    "mtime": 1789707040.3185182,
+    "seen": 1789707449.8366754,
+    "ast_hash": "d2893237a47c6432dd063292874a4c92",
+    "semantic_hash": "d2893237a47c6432dd063292874a4c92"
+  },
+  "backup_checkpoint_phase2_1/app/main.py": {
+    "mtime": 1789707040.1645758,
+    "seen": 1789707449.8366773,
+    "ast_hash": "7617357f64d0aa7e27b5de1ded835697",
+    "semantic_hash": "7617357f64d0aa7e27b5de1ded835697"
+  },
+  "backup_checkpoint_phase2_1/app/models/reel.py": {
+    "mtime": 1789707040.18178,
+    "seen": 1789707449.8366792,
+    "ast_hash": "b065f78fbb219886a4c5101de8fdd7e8",
+    "semantic_hash": "b065f78fbb219886a4c5101de8fdd7e8"
+  },
+  "backup_checkpoint_phase2_1/app/repositories/reel.py": {
+    "mtime": 1789707040.247664,
+    "seen": 1789707449.8366807,
+    "ast_hash": "d1afa59af0b3683f7c88c97da5dbaac3",
+    "semantic_hash": "d1afa59af0b3683f7c88c97da5dbaac3"
+  },
+  "backup_checkpoint_phase2_1/app/schemas/reel.py": {
+    "mtime": 1789707040.1951504,
+    "seen": 1789707449.8366826,
+    "ast_hash": "008033d3064bd7ec2b5bfec1079d2e0e",
+    "semantic_hash": "008033d3064bd7ec2b5bfec1079d2e0e"
+  },
+  "backup_checkpoint_phase2_1/app/services/reel.py": {
+    "mtime": 1789707040.23005,
+    "seen": 1789707449.8366842,
+    "ast_hash": "2ca2e9f8a412417348037c3ee14721e5",
+    "semantic_hash": "2ca2e9f8a412417348037c3ee14721e5"
+  },
+  "backup_checkpoint_phase2_1/app/static/js/main.js": {
+    "mtime": 1789707040.2804513,
+    "seen": 1789707449.836686,
+    "ast_hash": "73bc52b43349574fe350aee6e00d6289",
+    "semantic_hash": "73bc52b43349574fe350aee6e00d6289"
+  },
+  "backup_checkpoint_phase2_1/frontend/.oxlintrc.json": {
+    "mtime": 1789707263.9275954,
+    "seen": 1789707449.836687,
+    "ast_hash": "5e6e3cea3e89137071c142dd7835b0ef",
+    "semantic_hash": "5e6e3cea3e89137071c142dd7835b0ef"
+  },
+  "backup_checkpoint_phase2_1/frontend/package.json": {
+    "mtime": 1789707264.2137518,
+    "seen": 1789707449.836689,
+    "ast_hash": "3c5ec2bbc4e934fd759a812375a57ecf",
+    "semantic_hash": "3c5ec2bbc4e934fd759a812375a57ecf"
+  },
+  "backup_checkpoint_phase2_1/frontend/src/App.jsx": {
+    "mtime": 1789707264.1931648,
+    "seen": 1789707449.8366907,
+    "ast_hash": "d1e95161956fc9bb03beb43f764fa936",
+    "semantic_hash": "d1e95161956fc9bb03beb43f764fa936"
+  },
+  "backup_checkpoint_phase2_1/frontend/src/components/ErrorBoundary.jsx": {
+    "mtime": 1789707264.008191,
+    "seen": 1789707449.8366923,
+    "ast_hash": "36f48d44cbc1661ab8027cb41fb634a6",
+    "semantic_hash": "36f48d44cbc1661ab8027cb41fb634a6"
+  },
+  "backup_checkpoint_phase2_1/frontend/src/components/dashboard/Metrics.jsx": {
+    "mtime": 1789707264.0320199,
+    "seen": 1789707449.836694,
+    "ast_hash": "84868a74cddf1e35e3a414bf2585882c",
+    "semantic_hash": "84868a74cddf1e35e3a414bf2585882c"
+  },
+  "backup_checkpoint_phase2_1/frontend/src/components/reel/Reel3D.jsx": {
+    "mtime": 1789707264.0608752,
+    "seen": 1789707449.836696,
+    "ast_hash": "33cc129b391052021e330ee5ab46d412",
+    "semantic_hash": "33cc129b391052021e330ee5ab46d412"
+  },
+  "backup_checkpoint_phase2_1/frontend/src/components/reel/ReelCard.jsx": {
+    "mtime": 1789707264.0454354,
+    "seen": 1789707449.836697,
+    "ast_hash": "a2f8a46cb229bb85e4e7d7d4561df9af",
+    "semantic_hash": "a2f8a46cb229bb85e4e7d7d4561df9af"
+  },
+  "backup_checkpoint_phase2_1/frontend/src/hooks/useReel.js": {
+    "mtime": 1789707263.951172,
+    "seen": 1789707449.8366985,
+    "ast_hash": "811aff377b780f6f7236a5929ee5e66f",
+    "semantic_hash": "811aff377b780f6f7236a5929ee5e66f"
+  },
+  "backup_checkpoint_phase2_1/frontend/src/main.jsx": {
+    "mtime": 1789707264.185503,
+    "seen": 1789707449.8367002,
+    "ast_hash": "7efda5efe7e98dd1a5b8c3d029b988ef",
+    "semantic_hash": "7efda5efe7e98dd1a5b8c3d029b988ef"
+  },
+  "backup_checkpoint_phase2_1/frontend/src/pages/Analytics.jsx": {
+    "mtime": 1789707264.1686277,
+    "seen": 1789707449.8367016,
+    "ast_hash": "8b30d630e168527fec3176ebc96d3dc6",
+    "semantic_hash": "8b30d630e168527fec3176ebc96d3dc6"
+  },
+  "backup_checkpoint_phase2_1/frontend/src/pages/Calendar.jsx": {
+    "mtime": 1789707264.1367025,
+    "seen": 1789707449.8367038,
+    "ast_hash": "df41aa44b4a17956243b6473b19c0e5f",
+    "semantic_hash": "df41aa44b4a17956243b6473b19c0e5f"
+  },
+  "backup_checkpoint_phase2_1/frontend/src/pages/CreateReel.jsx": {
+    "mtime": 1789707264.1407585,
+    "seen": 1789707449.8367078,
+    "ast_hash": "097589b9061ac28b33af3a1eb6841754",
+    "semantic_hash": "097589b9061ac28b33af3a1eb6841754"
+  },
+  "backup_checkpoint_phase2_1/frontend/src/pages/Editor.jsx": {
+    "mtime": 1789707264.1426613,
+    "seen": 1789707449.8367093,
+    "ast_hash": "432e5b2f14a828f10d914b1679c76f51",
+    "semantic_hash": "432e5b2f14a828f10d914b1679c76f51"
+  },
+  "backup_checkpoint_phase2_1/frontend/src/pages/Home.jsx": {
+    "mtime": 1789707264.1566083,
+    "seen": 1789707449.836711,
+    "ast_hash": "b7306f9a18198e44faf7f717658238b3",
+    "semantic_hash": "b7306f9a18198e44faf7f717658238b3"
+  },
+  "backup_checkpoint_phase2_1/frontend/src/pages/Jobs.jsx": {
+    "mtime": 1789707264.0832894,
+    "seen": 1789707449.8367124,
+    "ast_hash": "f074aee3201ec72895d596af58378b4a",
+    "semantic_hash": "f074aee3201ec72895d596af58378b4a"
+  },
+  "backup_checkpoint_phase2_1/frontend/src/pages/Library.jsx": {
+    "mtime": 1789707264.1239605,
+    "seen": 1789707449.836714,
+    "ast_hash": "781e0b476f1a93c9589690f8b19490d4",
+    "semantic_hash": "781e0b476f1a93c9589690f8b19490d4"
+  },
+  "backup_checkpoint_phase2_1/frontend/src/pages/Templates.jsx": {
+    "mtime": 1789707264.1048377,
+    "seen": 1789707449.8367155,
+    "ast_hash": "fb97fc8eebe3f5a23536a03632a82302",
+    "semantic_hash": "fb97fc8eebe3f5a23536a03632a82302"
+  },
+  "backup_checkpoint_phase2_1/frontend/vite.config.js": {
+    "mtime": 1789707263.9011776,
+    "seen": 1789707449.8367174,
+    "ast_hash": "5d54447744c19ccd28638a5c668d15ea",
+    "semantic_hash": "5d54447744c19ccd28638a5c668d15ea"
+  },
+  "data/output/reel_2.mp4": {
+    "mtime": 1789703476.7147796,
+    "seen": 1789707449.8510423,
+    "ast_hash": "83b40b2616227e47f3bfd29016302372",
+    "semantic_hash": "83b40b2616227e47f3bfd29016302372"
+  }
+}

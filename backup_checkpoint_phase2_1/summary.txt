@@ -1,0 +1,67 @@
+=== AI REEL FACTORY PHASE 2.1 BACKUP/CHECKPOINT ===
+
+Backup created: Fri Sep 18 10:24:43 IST 2026
+
+
+FRONTEND STATE:
+- Working directory: C:\Users\RATNAM\Downloads\ai-reel-factory-working-mvp\ai-reel-factory-working\frontend
+- Package manager: npm
+- Dev server port: 5173 (running)
+- Build output: frontend/dist/
+- Available backups: 
+  * frontend_backup_20260917_235340/
+  * frontend_hardening_backup_20260918_001830/
+
+BACKEND STATE:
+- Working directory: C:\Users\RATNAM\Downloads\ai-reel-factory-working-mvp\ai-reel-factory-working\app
+- Server: uvicorn
+- API server port: 8000 (running)
+- Framework: FastAPI
+- Database connection: SQLite via SQLAlchemy
+
+DATABASE STATE:
+- Type: SQLite
+- File: data/reels.db
+- Size: 36864 bytes
+- Tables: reel_items (based on models)
+
+API ENDPOINTS:
+- @app.get("/", response_class=HTMLResponse)
+- @app.post("/run")
+- @app.get("/video/{reel_id}")
+- @app.get("/api/reels", response_model=List[ReelItem])
+- @app.post("/api/reels", response_model=ReelItem)
+- @app.put("/api/reel/{reel_id}", response_model=ReelItem)
+- @app.get("/api/stats")
+- @app.get("/api/reel/{reel_id}", response_model=ReelItem)
+
+CURRENT WORKING PORTS:
+- Backend API: http://localhost:8000
+- Frontend Dev Server: http://localhost:5173
+
+INSTALLED DEPENDENCIES:
+Backend (Python):
+- fastapi==0.115.6
+- uvicorn[standard]==0.34.0
+- sqlalchemy==2.0.23
+- python-dotenv==1.0.0
+Frontend (Node.js/package.json):
+    "@react-three/drei": "^10.7.8",
+    "@react-three/fiber": "^9.7.0",
+    "axios": "^1.20.0",
+    "framer-motion": "^13.4.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-router-dom": "^7.18.4",
+    "three": "^0.186.0"
+  },
+  "devDependencies": {
+
+BUILD STATUS:
+- Frontend: Dev server running (npm run dev)
+- Production build available: Run 'npm run build'
+- Backend: No build required (interpreted Python)
+
+Phase 2.1 - COMPLETE THE REAL END-TO-END REEL WORKFLOW: ✅ IMPLEMENTED AND VERIFIED
+
+This checkpoint represents the stable baseline before Phase 3 development.
