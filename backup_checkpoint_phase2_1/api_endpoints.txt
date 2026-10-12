@@ -1,8 +1,0 @@
-@app.get("/", response_class=HTMLResponse)
-@app.post("/run")
-@app.get("/video/{reel_id}")
-@app.get("/api/reels", response_model=List[ReelItem])
-@app.post("/api/reels", response_model=ReelItem)
-@app.put("/api/reel/{reel_id}", response_model=ReelItem)
-@app.get("/api/stats")
-@app.get("/api/reel/{reel_id}", response_model=ReelItem)
