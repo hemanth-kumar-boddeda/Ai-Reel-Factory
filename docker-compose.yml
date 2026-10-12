@@ -3,9 +3,14 @@ services:
     build: .
     ports:
       - "8000:8000"
+    environment:
+      DATABASE_URL: sqlite:////app/data/reels.db
+      MOCK_MODE: "true"
     volumes:
-      - ./data:/data
+      - ./data:/app/data
     restart: unless-stopped
+
+  # Optional local automation UI. Do not expose with this cookie setting on a public deployment.
   n8n:
     image: n8nio/n8n:latest
     ports:
@@ -13,7 +18,8 @@ services:
     volumes:
       - n8n_data:/home/node/.n8n
     environment:
-      - N8N_SECURE_COOKIE=false
+      N8N_SECURE_COOKIE: "false"
     restart: unless-stopped
+
 volumes:
   n8n_data:
