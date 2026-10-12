@@ -146,5 +146,7 @@ Focused bug reports and contributions are welcome.
 3. Run the relevant tests and frontend build.
 4. Describe what changed and what you verified in the pull request.
 For bug reports, include the affected workflow, reproduction steps, expected behavior, actual behavior, and relevant redacted logs. Never attach secrets or real user data.
+
+
 📄 License
 No license has been specified in this repository yet. Until a license is added, do not assume the source is available for unrestricted reuse, redistribution, or modification.
