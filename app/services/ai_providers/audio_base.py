@@ -2,7 +2,7 @@
 Base class for AI audio generation providers.
 """
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, Dict, Any
 from pathlib import Path
 
 class BaseAudioProvider(ABC):

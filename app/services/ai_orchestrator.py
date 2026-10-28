@@ -5,12 +5,12 @@ import asyncio
 from typing import Optional, Dict, Any
 from pathlib import Path
 from ..core.config import settings
-from .script_provider import BaseScriptProvider
-from .audio_base import BaseAudioProvider
-from .base import BaseVideoProvider
-from .mock_script_provider import MockScriptProvider
-from .mock_audio_provider import MockAudioProvider
-from .mock_video_provider import MockVideoProvider
+from .ai_providers.script_provider import BaseScriptProvider, StructuredScript
+from .ai_providers.audio_base import BaseAudioProvider
+from .ai_providers.base import BaseVideoProvider
+from .ai_providers.mock_script_provider import MockScriptProvider
+from .ai_providers.mock_audio_provider import MockAudioProvider
+from .ai_providers.mock_video_provider import MockVideoProvider
 
 class AIOrchestrator:
     """Orchestrates AI providers for script, audio, and video asset generation."""
@@ -24,7 +24,7 @@ class AIOrchestrator:
         """
         Initialize the AI orchestrator with optional providers.
         If a provider is not provided, a mock provider will be used.
-        
+
         Args:
             script_provider: Script provider instance
             audio_provider: Audio provider instance
@@ -39,24 +39,32 @@ class AIOrchestrator:
         prompt: str,
         context: Optional[str] = None,
         max_length: int = 500
-    ) -> Optional[str]:
+    ) -> Optional[StructuredScript]:
         """
-        Generate a script using the configured script provider.
-        
+        Generate a structured script using the configured script provider.
+
         Args:
             prompt: Text prompt for script generation
             context: Optional context to guide generation
             max_length: Maximum length of generated script in characters
-            
+
         Returns:
-            Generated script as a string, or None if generation failed
+            Generated structured script as a StructuredScript object, or None if generation failed
         """
+        print(f"AIOrchestrator.generate_script called with prompt={prompt}, context={context}, max_length={max_length}")
         try:
-            if not self.script_provider.is_available():
+            is_avail = await self.script_provider.is_available()
+            print(f"AIOrchestrator.generate_script: script_provider.is_available() returned {is_avail}")
+            if not is_avail:
+                print("AIOrchestrator.generate_script: provider not available, returning None")
                 return None
-            return await self.script_provider.generate_script(prompt, context, max_length)
+            result = await self.script_provider.generate_script(prompt, context, max_length)
+            print(f"AIOrchestrator.generate_script: provider.generate_script returned {result}")
+            return result
         except Exception as e:
             print(f"Error generating script: {e}")
+            import traceback
+            traceback.print_exc()
             return None
 
     async def generate_audio(
@@ -67,12 +75,12 @@ class AIOrchestrator:
     ) -> bool:
         """
         Generate audio using the configured audio provider.
-        
+
         Args:
             text: Text to convert to speech
             output_path: Path where the generated audio should be saved
             voice_options: Optional voice configuration
-            
+
         Returns:
             True if audio generation was successful, False otherwise
         """
@@ -87,21 +95,21 @@ class AIOrchestrator:
     async def generate_video_asset(
         self,
         prompt: str,
-        identity_reference_path: Optional[Path] = None,
         output_path: Path,
+        identity_reference_path: Optional[Path] = None,
         duration: int = 12,
         aspect_ratio: str = "9:16"
     ) -> bool:
         """
         Generate a video asset using the configured video provider.
-        
+
         Args:
             prompt: Text prompt for video asset generation
             identity_reference_path: Optional path to reference image for identity consistency
             output_path: Path where the generated video asset should be saved
             duration: Duration of video asset in seconds
             aspect_ratio: Aspect ratio of video asset (e.g., "9:16", "16:9")
-            
+
         Returns:
             True if video asset generation was successful, False otherwise
         """
@@ -109,7 +117,7 @@ class AIOrchestrator:
             if not self.video_provider.is_available():
                 return False
             return await self.video_provider.generate_video_asset(
-                prompt, identity_reference_path, output_path, duration, aspect_ratio
+                prompt, output_path, identity_reference_path, duration, aspect_ratio
             )
         except Exception as e:
             print(f"Error generating video asset: {e}")

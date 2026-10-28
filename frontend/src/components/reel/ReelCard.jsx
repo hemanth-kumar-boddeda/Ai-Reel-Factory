@@ -6,11 +6,11 @@ export default function ReelCard({ reel }) {
 
   return (
     <Link
-      to={`/editor/${reel.id}`}
+      to={`/editor/${reel.id || 0}`}
       className="reel-card"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      aria-label={`Reel: ${reel.title}. Status: ${reel.status}. QA score: ${reel.qa_score ?? 'N/A'}`}
+      aria-label={`Reel: ${reel.title || ''}. Status: ${reel.status || ''}. QA score: ${reel.qa_score ?? 'N/A'}`}
     >
       <div className={`reel-card-inner ${hovered ? 'hovered' : ''}`}>
         <div className="reel-thumbnail">
@@ -20,9 +20,9 @@ export default function ReelCard({ reel }) {
           </div>
         </div>
         <div className="reel-info">
-          <h3>{reel.title}</h3>
-          <p className="reel-source">{reel.source}</p>
-          <div className="reel-status">{reel.status}</div>
+          <h3>{reel.title || ''}</h3>
+          <p className="reel-source">{reel.source || ''}</p>
+          <div className="reel-status">{reel.status || ''}</div>
           <div className="reel-metrics">
             <span>QA: {reel.qa_score ?? 'N/A'}</span>
             <span>Views: N/A</span>

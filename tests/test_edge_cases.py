@@ -1,7 +1,8 @@
-"""Test suite for edge cases and error conditions."""
 import pytest
 from fastapi import status
 from app.models.job import JobStatus
+
+"""Test suite for edge cases and error conditions."""
 
 
 def test_render_unknown_reel(client):
@@ -103,7 +104,7 @@ def test_configuration_field_types(client):
     assert data["visual_style"] == reel_data["visual_style"]
     assert data["voice"] == reel_data["voice"]
     assert data["captions"] == reel_data["captions"]
-    assert data["cta"] == repo_data["cta"]
+    assert data["cta"] == reel_data["cta"]
 
     # Test integer field
     reel_data["duration"] = 120
@@ -145,6 +146,7 @@ def test_concurrent_job_creation_same_reel(client):
     import threading
     import time
 
+    print("TEST CONCURRENT JOB CREATION SAME REEL STARTED")
     # Create a reel
     reel_data = {
         "source": "Concurrent Test",
@@ -153,12 +155,21 @@ def test_concurrent_job_creation_same_reel(client):
     }
     create_response = client.post("/api/reels", json=reel_data)
     reel_id = create_response.json()["id"]
+    print(f"CREATED REEL WITH ID {reel_id}")
 
     results = []
+    exceptions = []
 
     def create_job():
-        response = client.post(f"/api/reels/{reel_id}/render")
-        results.append(response.json())
+        print(f"THREAD {threading.get_ident()} STARTED")
+        try:
+            response = client.post(f"/api/reels/{reel_id}/render")
+            print(f"THREAD {threading.get_ident()} GOT RESPONSE: {response.status_code}")
+            results.append(response.json())
+            print(f"THREAD {threading.get_ident()} APPENDED RESULT")
+        except Exception as e:
+            print(f"THREAD {threading.get_ident()} EXCEPTION: {e}")
+            exceptions.append(e)
 
     # Create multiple threads to simulate concurrent requests
     threads = []
@@ -171,9 +182,18 @@ def test_concurrent_job_creation_same_reel(client):
     for thread in threads:
         thread.join()
 
+    # Print any exceptions that occurred in the threads
+    if exceptions:
+        for i, e in enumerate(exceptions):
+            print(f"EXCEPTION IN THREAD {i}: {e}")
+
     # All should have succeeded and returned the same job ID (due to duplicate protection)
+    print(f"RESULTS LENGTH: {len(results)}")
+    if results:
+        print(f"FIRST RESULT: {results[0]}")
     assert len(results) == 5
     job_ids = [r["id"] for r in results]
     # All job IDs should be the same
     assert len(set(job_ids)) == 1
     assert results[0]["status"] == "PENDING"
+    print("TEST CONCURRENT JOB CREATION SAME REEL ENDED")

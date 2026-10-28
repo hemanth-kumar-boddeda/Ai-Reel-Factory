@@ -8,7 +8,7 @@ class ReelItemBase(BaseModel):
     title: str
     url: HttpUrl
     summary: Optional[str] = None
-    identity_reference_path: Optional[str] = None
+    identity_asset_id: Optional[int] = None
     score: Optional[int] = None
     # Configuration fields (optional for create, but we can include them as optional)
     hook: Optional[str] = None
@@ -18,6 +18,14 @@ class ReelItemBase(BaseModel):
     voice: Optional[str] = None
     captions: Optional[str] = None
     cta: Optional[str] = None
+    # Pipeline fields (optional for create, but we can include them as optional)
+    research_data: Optional[str] = None
+    script: Optional[str] = None
+    storyboard: Optional[str] = None
+    assets_data: Optional[str] = None
+    voice_data: Optional[str] = None
+    qa_score: Optional[float] = None
+    published_url: Optional[HttpUrl] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -29,7 +37,7 @@ class ReelItemUpdate(BaseModel):
     title: Optional[str] = None
     url: Optional[HttpUrl] = None
     summary: Optional[str] = None
-    identity_reference_path: Optional[str] = None
+    identity_asset_id: Optional[int] = None
     score: Optional[int] = None
     status: Optional[ReelStatus] = None
     video_path: Optional[str] = None
@@ -68,7 +76,7 @@ class ReelItem(ReelItemInDBBase):
     voice_data: Optional[str] = None
     qa_score: Optional[float] = None
     published_url: Optional[HttpUrl] = None
-    identity_reference_path: Optional[str] = None
+    identity_asset_id: Optional[int] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -80,6 +88,6 @@ class ReelItemInDB(ReelItemInDBBase):
     voice_data: Optional[str] = None
     qa_score: Optional[float] = None
     published_url: Optional[HttpUrl] = None
-    identity_reference_path: Optional[str] = None
+    identity_asset_id: Optional[int] = None
 
     model_config = ConfigDict(from_attributes=True)

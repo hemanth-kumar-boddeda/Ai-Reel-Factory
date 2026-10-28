@@ -42,9 +42,20 @@ class Settings(BaseSettings):
     SECRET_KEY: str = Field(default="your-secret-key-here", env="SECRET_KEY")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
+    # Job Queue
+    REDIS_URL: str = Field(default="redis://localhost:6379/0", env="REDIS_URL")
+    RQ_QUEUE_NAME: str = Field(default="reel-render", env="RQ_QUEUE_NAME")
+    JOB_QUEUE_BACKEND: str = Field(default="background", env="JOB_QUEUE_BACKEND")  # background or rq
+    BASE_URL: str = Field(default="http://localhost:8000", env="BASE_URL")  # Base URL for the server
+    INSTAGRAM_CLIENT_ID: str = Field(default="", env="INSTAGRAM_CLIENT_ID")
+    INSTAGRAM_CLIENT_SECRET: str = Field(default="", env="INSTAGRAM_CLIENT_SECRET")
+    INSTAGRAM_REDIRECT_URI: str = Field(default="http://localhost:8000/instagram/callback", env="INSTAGRAM_REDIRECT_URI")
+    INSTAGRAM_DEV_MODE: bool = Field(default=False, env="INSTAGRAM_DEV_MODE")
+
     class Config:
         env_file = ".env"
         case_sensitive = True
+        extra = "ignore"
 
 # Global settings instance
 settings = Settings()

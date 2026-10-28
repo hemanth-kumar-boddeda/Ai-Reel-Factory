@@ -7,12 +7,16 @@ from app.models.reel import ReelItem
 
 class JobStatus(str, Enum):
     PENDING = "PENDING"
+    QUEUED = "QUEUED"
     PROCESSING = "PROCESSING"
     COMPLETED = "COMPLETED"
     FAILED = "FAILED"
 
 class JobType(str, Enum):
     RENDER = "RENDER"
+    PIPELINE = "PIPELINE"
+    INSTAGRAM_PUBLISH = "INSTAGRAM_PUBLISH"
+    INSTAGRAM_ANALYTICS = "INSTAGRAM_ANALYTICS"
     # Future types can be added here
     # SCRIPT_GENERATION = "SCRIPT_GENERATION"
     # ASSET_GENERATION = "ASSET_GENERATION"
@@ -22,9 +26,10 @@ class JobItem(Base):
     __tablename__ = "jobs"
 
     id = Column(Integer, primary_key=True, index=True)
-    reel_id = Column(Integer, ForeignKey("items.id"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    reel_id = Column(Integer, ForeignKey("items.id"), nullable=True, index=True)
     type = Column(String, nullable=False)  # could use Enum but String is fine for now
-    status = Column(String, default=JobStatus.PENDING.value)
+    status = Column(String, default=JobStatus.PENDING.value, index=True)
     progress = Column(Integer, default=0)  # 0-100
     result = Column(Text, nullable=True)  # JSON string or text
     error = Column(Text, nullable=True)
@@ -33,3 +38,4 @@ class JobItem(Base):
 
     # Relationship to ReelItem
     reel = relationship("ReelItem", back_populates="jobs")
+    owner = relationship("UserItem", back_populates="jobs")

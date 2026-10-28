@@ -42,7 +42,10 @@ export default function DiscoverCard({ reel }) {
           <Link to={`/editor/${reel.id}`} className="btn btn-sm">
             View
           </Link>
-          <Link to="/create" className="btn btn-sm btn-secondary">
+          <Link
+            to={{ pathname: '/create', state: { reel: reel } }}
+            className="btn btn-sm btn-secondary"
+          >
             Create Reel
           </Link>
         </div>

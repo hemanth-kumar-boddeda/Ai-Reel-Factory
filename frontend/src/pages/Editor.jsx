@@ -2,10 +2,13 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useReel } from '../hooks/useReel';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 
 export default function Editor() {
   const reducedMotion = useReducedMotion();
+  // Helper function to conditionally apply motion props
+  const motionProps = (reducedMotion, props) =>
+    reducedMotion ? {} : props;
   const { reelId } = useParams();
   const navigate = useNavigate();
   const { reels: allReels, loading, error } = useReel();
@@ -20,7 +23,7 @@ export default function Editor() {
   useEffect(() => {
     const fetchReel = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/reel/${reelId}`);
+        const response = await api.get(`/api/reel/${reelId}`);
         const fetchedReel = response.data;
 
         // Parse research_data to extract UI control values if they exist
@@ -79,14 +82,18 @@ export default function Editor() {
 
   if (loading && !reel) return (
     <motion.div
-      initial={reducedMotion ? false : { opacity: 0 }}
-      animate={reducedMotion ? false : { opacity: 1 }}
-      transition={reducedMotion ? undefined : { duration: 0.5 }}
+      {...motionProps(reducedMotion, {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        transition: { duration: 0.5 }
+      })}
     >
       <motion.h2
-        initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-        animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-        transition={reducedMotion ? undefined : { duration: 0.5 }}
+        {...motionProps(reducedMotion, {
+          initial: { opacity: 0, y: 20 },
+          animate: { opacity: 1, y: 0 },
+          transition: { duration: 0.5 }
+        })}
       >
         Loading...
       </motion.h2>
@@ -95,28 +102,36 @@ export default function Editor() {
 
   if (error && !reel) return (
     <motion.div
-      initial={reducedMotion ? false : { opacity: 0 }}
-      animate={reducedMotion ? false : { opacity: 1 }}
-      transition={reducedMotion ? undefined : { duration: 0.5 }}
+      {...motionProps(reducedMotion, {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        transition: { duration: 0.5 }
+      })}
     >
       <motion.h2
-        initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-        animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-        transition={reducedMotion ? undefined : { duration: 0.5 }}
+        {...motionProps(reducedMotion, {
+          initial: { opacity: 0, y: 20 },
+          animate: { opacity: 1, y: 0 },
+          transition: { duration: 0.5 }
+        })}
       >
         Error loading data
       </motion.h2>
       <motion.p
-        initial={reducedMotion ? false : { opacity: 0, x: 20 }}
-        animate={reducedMotion ? false : { opacity: 1, x: 0 }}
-        transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.2 }}
+        {...motionProps(reducedMotion, {
+          initial: { opacity: 0, x: 20 },
+          animate: { opacity: 1, x: 0 },
+          transition: { duration: 0.5, delay: 0.2 }
+        })}
       >
         {error.message || 'An unknown error occurred'}
       </motion.p>
       <motion.button
-        initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-        animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-        transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.5 }}
+        {...motionProps(reducedMotion, {
+          initial: { opacity: 0, y: 20 },
+          animate: { opacity: 1, y: 0 },
+          transition: { duration: 0.5, delay: 0.5 }
+        })}
         onClick={() => window.location.reload()}
       >
         Try again
@@ -127,30 +142,38 @@ export default function Editor() {
   if (!reel) {
     return (
       <motion.div
-        initial={reducedMotion ? false : { opacity: 0 }}
-        animate={reducedMotion ? false : { opacity: 1 }}
-        transition={reducedMotion ? undefined : { duration: 0.5 }}
+        {...motionProps(reducedMotion, {
+          initial: { opacity: 0 },
+          animate: { opacity: 1 },
+          transition: { duration: 0.5 }
+        })}
       >
         <motion.h2
-          initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-          animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-          transition={reducedMotion ? undefined : { duration: 0.5 }}
+          {...motionProps(reducedMotion, {
+            initial: { opacity: 0, y: 20 },
+            animate: { opacity: 1, y: 0 },
+            transition: { duration: 0.5 }
+          })}
         >
           Reel not found
         </motion.h2>
         {allReels.length === 0 ? (
           <motion.p
-            initial={reducedMotion ? false : { opacity: 0, x: 20 }}
-            animate={reducedMotion ? false : { opacity: 1, x: 0 }}
-            transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.2 }}
+            {...motionProps(reducedMotion, {
+              initial: { opacity: 0, x: 20 },
+              animate: { opacity: 1, x: 0 },
+              transition: { duration: 0.5, delay: 0.2 }
+            })}
           >
             No reels available yet. Create a reel to edit.
           </motion.p>
         ) : null}
         <motion.button
-          initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-          animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-          transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.4 }}
+          {...motionProps(reducedMotion, {
+            initial: { opacity: 0, y: 20 },
+            animate: { opacity: 1, y: 0 },
+            transition: { duration: 0.5, delay: 0.4 }
+          })}
           asChild
         >
           <a href="/create" style={{ textDecoration: 'none' }}>
@@ -203,7 +226,7 @@ export default function Editor() {
         updateData.script = reel.script;
       }
 
-      const response = await axios.put(`http://localhost:8000/api/reel/${reel.id}`, updateData);
+      const response = await api.put(`/api/reel/${reel.id}`, updateData);
 
       setReel(response.data);
       setSaveSuccess(true);
@@ -222,37 +245,47 @@ export default function Editor() {
 
   return (
     <motion.div
-      initial={reducedMotion ? false : { opacity: 0, y: 30 }}
-      animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-      transition={reducedMotion ? undefined : { duration: 0.6 }}
+      {...motionProps(reducedMotion, {
+        initial: { opacity: 0, y: 30 },
+        animate: { opacity: 1, y: 0 },
+        transition: { duration: 0.6 }
+      })}
       className="editor-page"
     >
       <motion.h1
-        initial={reducedMotion ? false : { opacity: 0, x: -50 }}
-        animate={reducedMotion ? false : { opacity: 1, x: 0 }}
-        transition={reducedMotion ? undefined : { duration: 0.8, delay: 0.2 }}
+        {...motionProps(reducedMotion, {
+          initial: { opacity: 0, x: -50 },
+          animate: { opacity: 1, x: 0 },
+          transition: { duration: 0.8, delay: 0.2 }
+        })}
       >
         Reel Editor
       </motion.h1>
 
       {saveError && (
         <motion.div
-          initial={reducedMotion ? false : { opacity: 0 }}
-          animate={reducedMotion ? false : { opacity: 1 }}
-          transition={reducedMotion ? undefined : { duration: 0.5 }}
+          {...motionProps(reducedMotion, {
+            initial: { opacity: 0 },
+            animate: { opacity: 1 },
+            transition: { duration: 0.5 }
+          })}
         >
           <motion.p
-            initial={reducedMotion ? false : { opacity: 0, x: 20 }}
-            animate={reducedMotion ? false : { opacity: 1, x: 0 }}
-            transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.2 }}
+            {...motionProps(reducedMotion, {
+              initial: { opacity: 0, x: 20 },
+              animate: { opacity: 1, x: 0 },
+              transition: { duration: 0.5, delay: 0.2 }
+            })}
             style={{ color: '#ff6b6b' }}
           >
             {saveError}
           </motion.p>
           <motion.button
-            initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-            animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-            transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.5 }}
+            {...motionProps(reducedMotion, {
+              initial: { opacity: 0, y: 20 },
+              animate: { opacity: 1, y: 0 },
+              transition: { duration: 0.5, delay: 0.5 }
+            })}
             onClick={() => setSaveError(null)}
           >
             Close
@@ -262,14 +295,18 @@ export default function Editor() {
 
       {saveSuccess && (
         <motion.div
-          initial={reducedMotion ? false : { opacity: 0 }}
-          animate={reducedMotion ? false : { opacity: 1 }}
-          transition={reducedMotion ? undefined : { duration: 0.5 }}
+          {...motionProps(reducedMotion, {
+            initial: { opacity: 0 },
+            animate: { opacity: 1 },
+            transition: { duration: 0.5 }
+          })}
         >
           <motion.p
-            initial={reducedMotion ? false : { opacity: 0, x: 20 }}
-            animate={reducedMotion ? false : { opacity: 1, x: 0 }}
-            transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.2 }}
+            {...motionProps(reducedMotion, {
+              initial: { opacity: 0, x: 20 },
+              animate: { opacity: 1, x: 0 },
+              transition: { duration: 0.5, delay: 0.2 }
+            })}
             style={{ color: '#4ecdc4' }}
           >
             Changes saved successfully!
@@ -279,21 +316,27 @@ export default function Editor() {
 
       <motion.div
         className="editor-layout"
-        initial={reducedMotion ? false : { opacity: 0 }}
-        animate={reducedMotion ? false : { opacity: 1 }}
-        transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.5 }}
+        {...motionProps(reducedMotion, {
+          initial: { opacity: 0 },
+          animate: { opacity: 1 },
+          transition: { duration: 0.5, delay: 0.5 }
+        })}
       >
         {/* Video Preview Section */}
         <motion.div
           className="editor-preview"
-          initial={reducedMotion ? false : { opacity: 0, x: -30 }}
-          animate={reducedMotion ? false : { opacity: 1, x: 0 }}
-          transition={reducedMotion ? undefined : { duration: 0.6, delay: 0.6 }}
+          {...motionProps(reducedMotion, {
+            initial: { opacity: 0, x: -30 },
+            animate: { opacity: 1, x: 0 },
+            transition: { duration: 0.6, delay: 0.6 }
+          })}
         >
           <motion.h2
-            initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-            animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-            transition={reducedMotion ? undefined : { duration: 0.5 }}
+            {...motionProps(reducedMotion, {
+              initial: { opacity: 0, y: 20 },
+              animate: { opacity: 1, y: 0 },
+              transition: { duration: 0.5 }
+            })}
           >
             Preview
           </motion.h2>
@@ -312,9 +355,11 @@ export default function Editor() {
           ) : (
             <motion.div
               className="placeholder"
-              initial={reducedMotion ? false : { opacity: 0, scale: 0.8 }}
-              animate={reducedMotion ? false : { opacity: 1, scale: 1 }}
-              transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.2 }}
+              {...motionProps(reducedMotion, {
+                initial: { opacity: 0, scale: 0.8 },
+                animate: { opacity: 1, scale: 1 },
+                transition: { duration: 0.5, delay: 0.2 }
+              })}
             >
               Video Preview
               {!reel.video_path && (
@@ -329,14 +374,18 @@ export default function Editor() {
         {/* Editor Controls Section */}
         <motion.div
           className="editor-controls"
-          initial={reducedMotion ? false : { opacity: 0, x: 30 }}
-          animate={reducedMotion ? false : { opacity: 1, x: 0 }}
-          transition={reducedMotion ? undefined : { duration: 0.6, delay: 0.8 }}
+          {...motionProps(reducedMotion, {
+            initial: { opacity: 0, x: 30 },
+            animate: { opacity: 1, x: 0 },
+            transition: { duration: 0.6, delay: 0.8 }
+          })}
         >
           <motion.h2
-            initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-            animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-            transition={reducedMotion ? undefined : { duration: 0.5 }}
+            {...motionProps(reducedMotion, {
+              initial: { opacity: 0, y: 20 },
+              animate: { opacity: 1, y: 0 },
+              transition: { duration: 0.5 }
+            })}
           >
             Reel Properties
           </motion.h2>
@@ -480,9 +529,11 @@ export default function Editor() {
             onClick={handleSave}
             disabled={isSaving}
             className="mt-6 w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium rounded-md hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-200 focus:ring-blue-500 transition-all duration-200"
-            initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-            animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-            transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.8 }}
+            {...motionProps(reducedMotion, {
+              initial: { opacity: 0, y: 20 },
+              animate: { opacity: 1, y: 0 },
+              transition: { duration: 0.5, delay: 0.8 }
+            })}
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </motion.button>

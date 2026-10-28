@@ -1,11 +1,16 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { useReel } from '../hooks/useReel';
 import DiscoverCard from '../components/DiscoverCard';
+import { useState } from 'react';
 
 export default function Discover() {
   const { reels, loading, error, refetch } = useReel();
   const reducedMotion = useReducedMotion();
   const [searchTerm, setSearchTerm] = useState("");
+
+  // Helper function to conditionally apply motion props
+  const motionProps = (reducedMotion, props) =>
+    reducedMotion ? {} : props;
 
   // Filter reels to only those with status 'DISCOVERED'
   const discoveredReels = reels.filter(reel => reel.status === "DISCOVERED");
@@ -20,17 +25,22 @@ export default function Discover() {
       (reel.summary && reel.summary.toLowerCase().includes(term))
     );
   });
+
   if (loading) {
     return (
       <motion.div
-        initial={reducedMotion ? false : { opacity: 0 }}
-        animate={reducedMotion ? false : { opacity: 1 }}
-        transition={reducedMotion ? undefined : { duration: 0.5 }}
+        {...motionProps(reducedMotion, {
+          initial: { opacity: 0 },
+          animate: { opacity: 1 },
+          transition: { duration: 0.5 }
+        })}
       >
         <motion.h2
-          initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-          animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-          transition={reducedMotion ? undefined : { duration: 0.5 }}
+          {...motionProps(reducedMotion, {
+            initial: { opacity: 0, y: 20 },
+            animate: { opacity: 1, y: 0 },
+            transition: { duration: 0.5 }
+          })}
         >
           Loading discoveries...
         </motion.h2>
@@ -41,9 +51,11 @@ export default function Discover() {
               <motion.div
                 key={i}
                 className="discover-card-glass"
-                initial={reducedMotion ? false : { opacity: 0, scale: 0.9 }}
-                animate={reducedMotion ? false : { opacity: 1, scale: 1 }}
-                transition={reducedMotion ? undefined : { duration: 0.5, delay: i * 0.1 }}
+                {...motionProps(reducedMotion, {
+                  initial: { opacity: 0, scale: 0.9 },
+                  animate: { opacity: 1, scale: 1 },
+                  transition: { duration: 0.5, delay: i * 0.1 }
+                })}
               >
                 <div className="discover-card-content">
                   <div className="discover-card-header">
@@ -64,31 +76,40 @@ export default function Discover() {
       </motion.div>
     );
   }
+
   if (error) {
     return (
       <motion.div
-        initial={reducedMotion ? false : { opacity: 0 }}
-        animate={reducedMotion ? false : { opacity: 1 }}
-        transition={reducedMotion ? undefined : { duration: 0.5 }}
+        {...motionProps(reducedMotion, {
+          initial: { opacity: 0 },
+          animate: { opacity: 1 },
+          transition: { duration: 0.5 }
+        })}
       >
         <motion.h2
-          initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-          animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-          transition={reducedMotion ? undefined : { duration: 0.5 }}
+          {...motionProps(reducedMotion, {
+            initial: { opacity: 0, y: 20 },
+            animate: { opacity: 1, y: 0 },
+            transition: { duration: 0.5 }
+          })}
         >
           We could not load discoveries.
         </motion.h2>
         <motion.p
-          initial={reducedMotion ? false : { opacity: 0, x: 20 }}
-          animate={reducedMotion ? false : { opacity: 1, x: 0 }}
-          transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.2 }}
+          {...motionProps(reducedMotion, {
+            initial: { opacity: 0, x: 20 },
+            animate: { opacity: 1, x: 0 },
+            transition: { duration: 0.5, delay: 0.2 }
+          })}
         >
           Please try again later.
         </motion.p>
         <motion.button
-          initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-          animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-          transition={reducedMotion ? undefined : { duration: 0.5, delay: 1.2 }}
+          {...motionProps(reducedMotion, {
+            initial: { opacity: 0, y: 20 },
+            animate: { opacity: 1, y: 0 },
+            transition: { duration: 0.5, delay: 1.2 }
+          })}
           onClick={refetch}
         >
           Refresh
@@ -96,41 +117,52 @@ export default function Discover() {
       </motion.div>
     );
   }
+
   return (
     <motion.div
-      initial={reducedMotion ? false : { opacity: 0, y: 30 }}
-      animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-      transition={reducedMotion ? undefined : { duration: 0.6 }}
       className="discover-page"
+      {...motionProps(reducedMotion, {
+        initial: { opacity: 0, y: 30 },
+        animate: { opacity: 1, y: 0 },
+        transition: { duration: 0.6 }
+      })}
     >
       {/* Header */}
       <motion.div
-        initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-        animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-        transition={reducedMotion ? undefined : { duration: 0.8, delay: 0.2 }}
+        {...motionProps(reducedMotion, {
+          initial: { opacity: 0, y: 20 },
+          animate: { opacity: 1, y: 0 },
+          transition: { duration: 0.8, delay: 0.2 }
+        })}
       >
         <motion.h1
-          initial={reducedMotion ? false : { opacity: 0, x: -50 }}
-          animate={reducedMotion ? false : { opacity: 1, x: 0 }}
-          transition={reducedMotion ? undefined : { duration: 0.8, delay: 0.4 }}
+          {...motionProps(reducedMotion, {
+            initial: { opacity: 0, x: -50 },
+            animate: { opacity: 1, x: 0 },
+            transition: { duration: 0.8, delay: 0.4 }
+          })}
           className="discover-title"
         >
           <span className="title-prefix">Discover </span>
           <span className="title-suffix">Stories</span>
         </motion.h1>
         <motion.p
-          initial={reducedMotion ? false : { opacity: 0, x: 50 }}
-          animate={reducedMotion ? false : { opacity: 1, x: 0 }}
-          transition={reducedMotion ? undefined : { duration: 0.8, delay: 0.6 }}
+          {...motionProps(reducedMotion, {
+            initial: { opacity: 0, x: 50 },
+            animate: { opacity: 1, x: 0 },
+            transition: { duration: 0.8, delay: 0.6 }
+          })}
           className="discover-subtitle"
         >
           Browse recent stories and turn them into publish-ready reels.
         </motion.p>
         <motion.div
           className="discover-header-actions"
-          initial={reducedMotion ? false : { opacity: 0, scale: 0.9 }}
-          animate={reducedMotion ? false : { opacity: 1, scale: 1 }}
-          transition={reducedMotion ? undefined : { duration: 0.5, delay: 1.0 }}
+          {...motionProps(reducedMotion, {
+            initial: { opacity: 0, scale: 0.9 },
+            animate: { opacity: 1, scale: 1 },
+            transition: { duration: 0.5, delay: 1.0 }
+          })}
         >
           <div className="discover-search">
             <input
@@ -145,18 +177,22 @@ export default function Discover() {
             <motion.button
               onClick={refetch}
               className="btn btn-secondary"
-              initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-              animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-              transition={reducedMotion ? undefined : { duration: 0.5, delay: 1.2 }}
+              {...motionProps(reducedMotion, {
+                initial: { opacity: 0, y: 20 },
+                animate: { opacity: 1, y: 0 },
+                transition: { duration: 0.5, delay: 1.2 }
+              })}
             >
               Refresh
             </motion.button>
             <motion.a
               href="/create"
               className="btn btn-primary"
-              initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-              animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-              transition={reducedMotion ? undefined : { duration: 0.5, delay: 1.4 }}
+              {...motionProps(reducedMotion, {
+                initial: { opacity: 0, y: 20 },
+                animate: { opacity: 1, y: 0 },
+                transition: { duration: 0.5, delay: 1.4 }
+              })}
             >
               Create Reel
             </motion.a>
@@ -168,17 +204,21 @@ export default function Discover() {
       {filteredReels.length > 0 ? (
         <motion.div
           className="discover-grid"
-          initial={reducedMotion ? false : { opacity: 0, y: 30 }}
-          animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-          transition={reducedMotion ? undefined : { duration: 0.6, delay: 0.6 }}
+          {...motionProps(reducedMotion, {
+            initial: { opacity: 0, y: 30 },
+            animate: { opacity: 1, y: 0 },
+            transition: { duration: 0.6, delay: 0.6 }
+          })}
         >
           {filteredReels.map((reel) => (
             <motion.div
               key={reel.id}
               className="discover-card-container"
-              initial={reducedMotion ? false : { opacity: 0, scale: 0.9 }}
-              animate={reducedMotion ? false : { opacity: 1, scale: 1 }}
-              transition={reducedMotion ? undefined : { duration: 0.5, delay: reel.id * 0.01 }}
+              {...motionProps(reducedMotion, {
+                initial: { opacity: 0, scale: 0.9 },
+                animate: { opacity: 1, scale: 1 },
+                transition: { duration: 0.5, delay: reel.id * 0.01 }
+              })}
             >
               <DiscoverCard reel={reel} />
             </motion.div>
@@ -187,45 +227,57 @@ export default function Discover() {
       ) : (
         <motion.div
           className="empty-state"
-          initial={reducedMotion ? false : { opacity: 0, y: 30 }}
-          animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-          transition={reducedMotion ? undefined : { duration: 0.6, delay: 0.8 }}
+          {...motionProps(reducedMotion, {
+            initial: { opacity: 0, y: 30 },
+            animate: { opacity: 1, y: 0 },
+            transition: { duration: 0.6, delay: 0.8 }
+          })}
         >
           <motion.h2
-            initial={reducedMotion ? false : { opacity: 0, x: -20 }}
-            animate={reducedMotion ? false : { opacity: 1, x: 0 }}
-            transition={reducedMotion ? undefined : { duration: 0.6, delay: 1.0 }}
+            {...motionProps(reducedMotion, {
+            initial: { opacity: 0, x: -20 },
+            animate: { opacity: 1, x: 0 },
+            transition: { duration: 0.6, delay: 1.0 }
+          })}
           >
             No new stories yet.
           </motion.h2>
           <motion.p
-            initial={reducedMotion ? false : { opacity: 0, x: 20 }}
-            animate={reducedMotion ? false : { opacity: 1, x: 0 }}
-            transition={reducedMotion ? undefined : { duration: 0.6, delay: 1.2 }}
+            {...motionProps(reducedMotion, {
+            initial: { opacity: 0, x: 20 },
+            animate: { opacity: 1, x: 0 },
+            transition: { duration: 0.6, delay: 1.2 }
+          })}
           >
             Discover a story or create your first reel to see content here.
           </motion.p>
           <motion.div
             className="empty-state-actions"
-            initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-            animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-            transition={reducedMotion ? undefined : { duration: 0.5, delay: 1.4 }}
+            {...motionProps(reducedMotion, {
+            initial: { opacity: 0, y: 20 },
+            animate: { opacity: 1, y: 0 },
+            transition: { duration: 0.5, delay: 1.4 }
+          })}
           >
             <motion.button
               onClick={refetch}
               className="btn btn-secondary"
-              initial={reducedMotion ? false : { opacity: 0, y: 0 }}
-              animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-              transition={reducedMotion ? undefined : { duration: 0.5 }}
+              {...motionProps(reducedMotion, {
+                initial: { opacity: 0, y: 0 },
+                animate: { opacity: 1, y: 0 },
+                transition: { duration: 0.5 }
+              })}
             >
               Refresh
             </motion.button>
             <motion.a
               href="/create"
               className="btn btn-primary"
-              initial={reducedMotion ? false : { opacity: 0, y: 0 }}
-              animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-              transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.2 }}
+              {...motionProps(reducedMotion, {
+                initial: { opacity: 0, y: 0 },
+                animate: { opacity: 1, y: 0 },
+                transition: { duration: 0.5, delay: 0.2 }
+              })}
             >
               Create Reel
             </motion.a>

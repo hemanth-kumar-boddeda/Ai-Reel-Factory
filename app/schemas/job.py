@@ -4,12 +4,13 @@ from app.models.job import JobStatus, JobType
 from datetime import datetime
 
 class JobBase(BaseModel):
-    reel_id: int
+    reel_id: Optional[int] = None
     type: JobType
     status: JobStatus
     progress: int = 0
     result: Optional[str] = None
     error: Optional[str] = None
+    user_id: int
 
     model_config = ConfigDict(from_attributes=True)
 

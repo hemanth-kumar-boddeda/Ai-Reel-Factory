@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
-
-const API_BASE = 'http://localhost:8000';
+import api from '../utils/api';
 
 export function useReel() {
   const [reels, setReels] = useState([]);
@@ -14,8 +12,8 @@ export function useReel() {
       setLoading(true);
       setError(null);
       const [reelsRes, statsRes] = await Promise.all([
-        axios.get(`${API_BASE}/api/reels`),
-        axios.get(`${API_BASE}/api/stats`)
+        api.get('/api/reels'),
+        api.get('/api/stats')
       ]);
       setReels(reelsRes.data);
       setStats(statsRes.data);

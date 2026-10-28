@@ -1,4 +1,4 @@
-import { useState, useMemo, memo } from 'react';
+import { useState, useMemo, memo, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { OrbitControls } from '@react-three/drei';
@@ -56,17 +56,14 @@ const PipelineNode = memo(({ stage, reelToShow, index, total }) => {
 
 function Reel3D({ reels }) {
   const [selectedReel, setSelectedReel] = useState(null);
-  const [webglAvailable, setWebglAvailable] = useState(true);
-
-  // Check WebGL availability on mount
-  useState(() => {
+  const [webglAvailable, setWebglAvailable] = useState(() => {
     try {
       const canvas = document.createElement('canvas');
       return !!window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'));
     } catch (e) {
       return false;
     }
-  }, []);
+  });
 
   // Find the reel with the highest progress (or the first one that is not DISCOVERED)
   const getReelStatus = (reel) => {
