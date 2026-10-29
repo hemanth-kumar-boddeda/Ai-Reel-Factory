@@ -1032,3 +1032,30 @@ def pipeline_status(current_user=Depends(get_current_active_user)):
 def instagram_connection(current_user=Depends(get_current_active_user)):
     return None
 
+# --- Creator Studio stubs ---
+@app.get("/api/creator/providers")
+def creator_providers(current_user=Depends(get_current_active_user)):
+    return {
+        "speech_to_text": [],
+        "translation": [],
+        "talking_head": {"providers": [], "reference_images": [], "note": "Not configured"},
+        "cost_estimate": {},
+        "profile": {},
+    }
+
+@app.get("/api/creator/jobs")
+def creator_jobs(limit: int = 20, current_user=Depends(get_current_active_user)):
+    return []
+
+@app.get("/api/creator/jobs/{job_id}")
+def creator_job_detail(job_id: int, current_user=Depends(get_current_active_user)):
+    raise HTTPException(status_code=404, detail="Job not found")
+
+@app.post("/api/creator/uploads")
+def creator_upload(current_user=Depends(get_current_active_user)):
+    raise HTTPException(status_code=501, detail="Transcription upload not implemented yet")
+
+@app.post("/api/creator/identity")
+def creator_identity(current_user=Depends(get_current_active_user)):
+    raise HTTPException(status_code=501, detail="Identity upload not implemented yet")
+
