@@ -52,6 +52,18 @@ class Settings(BaseSettings):
     INSTAGRAM_REDIRECT_URI: str = Field(default="http://localhost:8000/instagram/callback", env="INSTAGRAM_REDIRECT_URI")
     INSTAGRAM_DEV_MODE: bool = Field(default=False, env="INSTAGRAM_DEV_MODE")
 
+    # AI Providers
+    OPENAI_API_KEY: str = Field(default="", env="OPENAI_API_KEY")
+    ELEVENLABS_API_KEY: str = Field(default="", env="ELEVENLABS_API_KEY")
+    PIKA_LABS_API_KEY: str = Field(default="", env="PIKA_LABS_API_KEY")
+
+    # Instagram / Meta publishing
+    INSTAGRAM_ACCESS_TOKEN: str = Field(default="", env="INSTAGRAM_ACCESS_TOKEN")
+    INSTAGRAM_ACCOUNT_ID: str = Field(default="", env="INSTAGRAM_ACCOUNT_ID")
+    META_APP_ID: str = Field(default="", env="META_APP_ID")
+    META_APP_SECRET: str = Field(default="", env="META_APP_SECRET")
+
+
     class Config:
         env_file = ".env"
         case_sensitive = True
