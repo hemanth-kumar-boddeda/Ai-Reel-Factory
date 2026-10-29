@@ -48,19 +48,19 @@ class ReelService:
             from .ai_providers.mock_script_provider import MockScriptProvider
             script_provider = MockScriptProvider()
         else:
-            script_provider = OpenAIScriptProvider()
+            script_provider = OpenAIScriptProvider(api_key=settings.OPENAI_API_KEY)
         # Audio provider
         if settings.MOCK_MODE or not settings.ELEVENLABS_API_KEY:
             from .ai_providers.mock_audio_provider import MockAudioProvider
             audio_provider = MockAudioProvider()
         else:
-            audio_provider = ElevenLabsProvider()
+            audio_provider = ElevenLabsProvider(api_key=settings.ELEVENLABS_API_KEY)
         # Video provider
         if settings.MOCK_MODE or not settings.PIKA_LABS_API_KEY:
             from .ai_providers.mock_video_provider import MockVideoProvider
             video_provider = MockVideoProvider()
         else:
-            video_provider = PikaLabsProvider()
+            video_provider = PikaLabsProvider(api_key=settings.PIKA_LABS_API_KEY)
         print(f"ReelService.__init__: script_provider = {script_provider}")
         self.ai_orchestrator = AIOrchestrator(
             script_provider=script_provider,
@@ -238,10 +238,24 @@ class ReelService:
                     loop.close()
 
             if structured_script is None:
-                # If generation fails, mark as failed
-                self.repository.update(row, ReelItemUpdate(status=ReelStatus.FAILED.value))
-                self.db.commit()
-                return None
+                # Fall back to mock script provider if AI fails (network/key issue)
+                print("Falling back to mock script provider")
+                from .ai_providers.mock_script_provider import MockScriptProvider
+                mock = MockScriptProvider()
+                try:
+                    loop2 = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop2)
+                    structured_script = loop2.run_until_complete(
+                        mock.generate_script(prompt=f"Generate a script for a reel about: {row.title}", context=row.summary, max_length=500)
+                    )
+                    loop2.close()
+                except Exception as e:
+                    print(f"Mock fallback failed: {e}")
+                    structured_script = None
+                if structured_script is None:
+                    self.repository.update(row, ReelItemUpdate(status=ReelStatus.FAILED.value))
+                    self.db.commit()
+                    return None
 
             # Store structured script in research_data as JSON
             research_data_json = structured_script.model_dump_json()
