@@ -131,6 +131,19 @@ export default function Dashboard() {
               disabled={busy}
               onClick={() =>
                 handle(
+                  () => runPipeline({ publish: false, dryRun: false }),
+                  'A new reel was created from the top story.'
+                )
+              }
+            >
+              Make a reel now
+            </Button>
+
+            <Button
+              variant="outline"
+              disabled={busy}
+              onClick={() =>
+                handle(
                   () => runPipeline({ publish: false, dryRun: true }),
                   'The dry run finished. Nothing was published.'
                 )
