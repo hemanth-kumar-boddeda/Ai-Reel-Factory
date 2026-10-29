@@ -1,0 +1,171 @@
+/* The Overview. */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  max-width: var(--content-max);
+  margin: 0 auto;
+}
+
+.metric-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.metric-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-4);
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elev-1);
+}
+
+.metric-tile-signal {
+  border-color: var(--line-lime);
+  background: linear-gradient(180deg, var(--lime-wash) 0%, transparent 62%),
+    var(--surface-raised);
+}
+
+.metric-tile-alert {
+  border-color: rgba(251, 113, 133, 0.32);
+}
+
+.metric-label {
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  color: var(--text-lo);
+}
+
+.metric-value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-2xl);
+  line-height: 1.1;
+  color: var(--text-hi);
+}
+
+.metric-hint {
+  font-size: var(--text-xs);
+  color: var(--text-lo);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.panel-link {
+  font-size: var(--text-xs);
+  color: var(--text-mid);
+  text-decoration: none;
+}
+
+.panel-link:hover {
+  color: var(--lime);
+  text-decoration: none;
+}
+
+/* --------------------------------------------------------------- lists */
+.story-list,
+.provider-list,
+.job-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.story-row,
+.provider-row,
+.job-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.story-row:last-child,
+.provider-row:last-child,
+.job-row:last-child {
+  border-bottom: none;
+}
+
+.story-title,
+.provider-name,
+.job-type {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-hi);
+}
+
+/* The capability a provider serves, in a quieter hand. */
+.provider-capability {
+  font-weight: 400;
+  color: var(--text-lo);
+}
+
+.job-error {
+  margin: 2px 0 0;
+  font-size: var(--text-xs);
+  color: var(--rose);
+  word-break: break-word;
+}
+
+.row .muted,
+.story-row .muted,
+.provider-row .muted,
+.job-row .muted {
+  margin: 0;
+}
+
+/* ------------------------------------------------------------ key/value */
+.kv-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.kv {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--line);
+  font-size: var(--text-sm);
+}
+
+.kv:last-of-type {
+  border-bottom: none;
+}
+
+.kv span {
+  color: var(--text-mid);
+  text-transform: capitalize;
+}
+
+.kv strong {
+  color: var(--text-hi);
+  font-weight: 500;
+  text-align: right;
+}
+
+@media (max-width: 1120px) {
+  .metric-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dashboard-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 420px) {
+  .metric-row { grid-template-columns: minmax(0, 1fr); }
+}

@@ -1,0 +1,137 @@
+/*
+ * The button.
+ *
+ * The base rules live in the base layer; this file only adds the variants
+ * and the sizes that the shared component needs.
+ */
+
+.btn {
+  --btn-height: 32px;
+  --btn-bg: var(--surface-overlay);
+  --btn-fg: var(--text-hi);
+  --btn-border: var(--line-strong);
+  height: var(--btn-height);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--btn-border);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-weight: 500;
+  line-height: 1;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.btn:hover:not(:disabled) {
+  --btn-bg: var(--surface-hover);
+  --btn-border: rgba(255, 255, 255, 0.2);
+}
+
+.btn:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  --btn-bg: var(--lime);
+  --btn-fg: var(--text-on-lime);
+  --btn-border: var(--lime);
+  font-weight: 600;
+  box-shadow: var(--elev-lime);
+}
+
+.btn-primary:hover:not(:disabled) {
+  --btn-bg: var(--lime-strong);
+  --btn-border: var(--lime-strong);
+}
+
+.btn-secondary {
+  --btn-bg: var(--violet-wash);
+  --btn-fg: var(--violet-soft);
+  --btn-border: rgba(139, 92, 246, 0.36);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  --btn-bg: rgba(139, 92, 246, 0.22);
+  --btn-border: rgba(139, 92, 246, 0.5);
+}
+
+.btn-outline {
+  --btn-bg: transparent;
+  --btn-fg: var(--text);
+  --btn-border: var(--line-strong);
+}
+
+.btn-outline:hover:not(:disabled) {
+  --btn-fg: var(--text-hi);
+  --btn-border: var(--line-lime);
+}
+
+.btn-ghost {
+  --btn-bg: transparent;
+  --btn-fg: var(--text-mid);
+  --btn-border: transparent;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  --btn-bg: var(--surface-hover);
+  --btn-fg: var(--text-hi);
+  --btn-border: transparent;
+}
+
+.btn-danger {
+  --btn-bg: var(--rose-wash);
+  --btn-fg: var(--rose);
+  --btn-border: rgba(251, 113, 133, 0.36);
+}
+
+.btn-danger:hover:not(:disabled) {
+  --btn-bg: rgba(251, 113, 133, 0.2);
+}
+
+.btn-small {
+  --btn-height: 26px;
+  padding: 0 var(--space-3);
+  font-size: var(--text-xs);
+}
+
+.btn-medium {
+  --btn-height: 32px;
+  font-size: var(--text-sm);
+}
+
+.btn-large {
+  --btn-height: 38px;
+  padding: 0 var(--space-5);
+  font-size: var(--text-md);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn-loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  width: 0.85rem;
+  height: 0.85rem;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: btn-spin 0.8s linear infinite;
+  top: 50%;
+  left: 50%;
+  margin: -0.45rem 0 0 -0.45rem;
+}
+
+@keyframes btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

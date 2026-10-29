@@ -1,77 +1,89 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
+import './auth.css';
 
 export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     setError(null);
     setLoading(true);
     try {
-      const response = await api.post('/auth/register', {
-        email,
-        password
-      });
-      // Log in to get the access token
-      const loginResponse = await api.post('/auth/login', new URLSearchParams({ username: email, password }), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      });
-      localStorage.setItem('accessToken', loginResponse.data.access_token);
+      await api.post('/auth/register', { email, password });
+      await login(email, password);
       navigate('/');
     } catch (err) {
       setLoading(false);
-      if (err.response && err.response.data) {
-        if (err.response.data.detail) {
-          setError(err.response.data.detail);
-        } else if (Array.isArray(err.response.data)) {
-          // Validation errors
-          setError(err.response.data.map(e => e.msg).join(', '));
-        } else {
-          setError('Registration failed.');
-        }
+      const detail = err?.response?.data?.detail;
+      if (Array.isArray(detail)) {
+        setError(detail.map((item) => item.msg).join(', '));
       } else {
-        setError('Registration failed. Please try again.');
+        setError(detail || err?.message || 'Registration failed. Please try again.');
       }
     }
   };
 
   return (
-    <div className="page-container">
-      <h1>Register</h1>
-      {error && <p style={{ color: '#ff6b6b' }}>{error}</p>}
-      <form onSubmit={handleSubmit} className="register-form">
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+    <div className="auth-screen">
+      <div className="auth-card">
+        <div className="auth-brand">
+          <span className="shell-brand-mark" aria-hidden="true" />
+          <div>
+            <h1 className="auth-title">Create a workspace</h1>
+            <p className="auth-sub">one account, one pipeline, one library</p>
+          </div>
         </div>
-        <div>
-          <label>Password (min 8 chars):</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={8}
-          />
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Registering...' : 'Register'}
-        </button>
-      </form>
-      <p>
-        Already have an account? <a href="/login">Login here</a>
-      </p>
+
+        {error && (
+          <p className="notice notice-error" role="alert">
+            {error}
+          </p>
+        )}
+
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="field">
+            <label htmlFor="register-email">Email</label>
+            <input
+              id="register-email"
+              className="input"
+              type="email"
+              autoComplete="username"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              required
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="register-password">Password</label>
+            <input
+              id="register-password"
+              className="input"
+              type="password"
+              autoComplete="new-password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+              minLength={8}
+            />
+            <small className="muted small">At least 8 characters.</small>
+          </div>
+          <button className="btn btn-primary" type="submit" disabled={loading}>
+            {loading ? 'Creating…' : 'Create the account'}
+          </button>
+        </form>
+
+        <p className="auth-foot">
+          Already have an account? <Link to="/login">Sign in</Link>.
+        </p>
+      </div>
     </div>
   );
 }

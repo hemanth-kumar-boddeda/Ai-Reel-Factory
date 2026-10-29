@@ -1,0 +1,53 @@
+/*
+ * The background layer.
+ *
+ * z-index:-1 keeps it behind every piece of UI: the field can tint the page
+ * background, but it can never pass over text or a control. The washes mirror
+ * the auth screen so the signed-out and signed-in views read as one place.
+ */
+
+.app-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(120% 120% at 20% 0%, rgba(139, 92, 246, 0.14) 0%, transparent 55%),
+    radial-gradient(100% 100% at 90% 100%, rgba(45, 212, 191, 0.1) 0%, transparent 60%),
+    var(--surface-sunken);
+}
+
+.app-bg canvas {
+  position: absolute;
+  inset: 0;
+}
+
+/* The cursor glow lives on this same back layer, so it never sits on text. */
+.motion-glow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 420px;
+  height: 420px;
+  margin: -210px 0 0 -210px;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle,
+    rgba(139, 92, 246, 0.16) 0%,
+    rgba(45, 212, 191, 0.07) 45%,
+    transparent 70%
+  );
+}
+
+@media (pointer: coarse) {
+  .motion-glow {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-glow {
+    display: none;
+  }
+}

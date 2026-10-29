@@ -1,314 +1,342 @@
-import { motion, useReducedMotion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Chart, registerables } from 'chart.js';
 import api from '../utils/api';
-import { Chart } from 'chart.js/auto';
+import StatusBadge from '../components/shared/StatusBadge';
+import { usePageEntrance, useScrollReveal } from '../lib/motion';
+import './Analytics.css';
 
+Chart.register(...registerables);
+
+const GRID = 'rgba(255, 255, 255, 0.07)';
+const TEXT = '#8a93a0';
+const LIME = '#c6f24e';
+const VIOLET = '#8b5cf6';
+
+function Metric({ label, value, hint }) {
+  return (
+    <div className="metric-tile">
+      <span className="metric-label">{label}</span>
+      <span className="metric-value">{value}</span>
+      {hint && <span className="metric-hint">{hint}</span>}
+    </div>
+  );
+}
+
+function TrendChart({ id, title, labels, values, colour, unit }) {
+  const canvasRef = useRef(null);
+  const chartRef = useRef(null);
+
+  useEffect(() => {
+    if (!canvasRef.current || !labels?.length) return undefined;
+    chartRef.current = new Chart(canvasRef.current, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: title,
+            data: values,
+            borderColor: colour,
+            borderWidth: 1.6,
+            pointRadius: 0,
+            pointHoverRadius: 3,
+            tension: 0.25,
+            fill: true,
+            backgroundColor: `${colour}14`,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 420 },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            displayColors: false,
+            callbacks: {
+              label: (item) => `${item.parsed.y} ${unit}`,
+            },
+          },
+        },
+        scales: {
+          x: {
+            grid: { color: GRID, drawTicks: false },
+            ticks: { color: TEXT, font: { size: 10 } },
+            border: { display: false },
+          },
+          y: {
+            beginAtZero: true,
+            grid: { color: GRID, drawTicks: false },
+            ticks: { color: TEXT, font: { size: 10 }, precision: 0 },
+            border: { display: false },
+          },
+        },
+      },
+    });
+    return () => {
+      chartRef.current?.destroy();
+      chartRef.current = null;
+    };
+  }, [labels, values, colour, title, unit]);
+
+  if (!labels?.length) {
+    return (
+      <div className="analytics-chart">
+        <p className="section-label">{title}</p>
+        <div className="empty-state">
+          <p className="empty-state-body">Nothing has been recorded yet.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="analytics-chart">
+      <p className="section-label">{title}</p>
+      <div className="analytics-chart-canvas">
+        <canvas ref={canvasRef} />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Analytics.
+ *
+ * It shows the metrics Instagram actually returned, with the timestamp they
+ * were collected at. A rate is only shown when the denominator is known, and
+ * the page says so when there is not enough data for a recommendation.
+ */
 export default function Analytics() {
-  const reducedMotion = useReducedMotion();
-  const [analytics, setAnalytics] = useState(null);
+  const scope = useRef(null);
+  const [insights, setInsights] = useState(null);
+  const [recommendations, setRecommendations] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [reelChart, setReelChart] = useState(null);
-  const [jobChart, setJobChart] = useState(null);
+  const [notice, setNotice] = useState(null);
+  const [busy, setBusy] = useState(false);
 
-  // Insert global styles for metric cards and charts
-  useEffect(() => {
-    const style = document.createElement('style');
-    style.textContent = `
-      .analytics-summary {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        justify-content: center;
-        margin-bottom: 2rem;
-      }
-      .metric-card {
-        background: var(--background-card, #fff);
-        border-radius: 8px;
-        padding: 1rem;
-        text-align: center;
-        min-width: 150px;
-        box-shadow: var(--shadow-sm, 0 2px 4px rgba(0,0,0,0.1));
-      }
-      .metric-card h3 {
-        margin: 0 0 0.5rem 0;
-        font-size: 1rem;
-        color: var(--text-muted, #666);
-      }
-      .metric-card p {
-        margin: 0;
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: var(--text-primary, #222);
-      }
-      .analytics-chart-container {
-        background: var(--background-card, #fff);
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-        box-shadow: var(--shadow-sm, 0 2px 4px rgba(0,0,0,0.1));
-      }
-      .chart-title {
-        margin: 0 0 1rem 0;
-        font-size: 1.25rem;
-        color: var(--text-primary, #222);
-        text-align: center;
-      }
-    `;
-    document.head.appendChild(style);
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
+  usePageEntrance(scope, { selector: '[data-animate]' });
+  useScrollReveal(scope);
 
-  const fetchAnalytics = async () => {
+  const load = async () => {
     try {
-      setLoading(true);
       setError(null);
-      const response = await api.get('/api/analytics');
-      setAnalytics(response.data);
+      const [insightsResponse, recommendationsResponse] = await Promise.all([
+        api.get('/api/analytics/insights'),
+        api.get('/api/analytics/recommendations'),
+      ]);
+      setInsights(insightsResponse.data || {});
+      setRecommendations(recommendationsResponse.data || null);
+    } catch (loadError) {
+      setError(
+        loadError?.response?.data?.detail ||
+          loadError?.message ||
+          'The analytics could not be loaded.'
+      );
+    } finally {
       setLoading(false);
-    } catch (err) {
-      setError('Failed to load analytics data. Please try again.');
-      setLoading(false);
-      console.error('Error fetching analytics:', err);
     }
   };
 
   useEffect(() => {
-    fetchAnalytics();
+    load();
   }, []);
 
-  // Initialize charts when data is available
-  useEffect(() => {
-    if (analytics && !loading && !error) {
-      const reelCtx = document.getElementById('reel-chart');
-      const jobCtx = document.getElementById('job-chart');
-
-      if (reelCtx && analytics.reel_creation_trend.length > 0) {
-        const reelChartInstance = new Chart(reelCtx, {
-          type: 'line',
-          data: {
-            labels: analytics.reel_creation_trend.map(item => item.date),
-            datasets: [{
-              label: 'Reels Created',
-              data: analytics.reel_creation_trend.map(item => item.count),
-              borderColor: 'rgb(75, 192, 192)',
-              tension: 0.1,
-              fill: false,
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: { position: 'top' },
-              tooltip: { mode: 'index', intersect: false }
-            },
-            scales: {
-              y: { beginAtZero: true, title: { display: true, text: 'Count' } },
-              x: { title: { display: true, text: 'Date' } }
-            }
-          }
-        });
-        setReelChart(reelChartInstance);
-      }
-
-      if (jobCtx && analytics.job_creation_trend.length > 0) {
-        const jobChartInstance = new Chart(jobCtx, {
-          type: 'line',
-          data: {
-            labels: analytics.job_creation_trend.map(item => item.date),
-            datasets: [{
-              label: 'Jobs Created',
-              data: analytics.job_creation_trend.map(item => item.count),
-              borderColor: 'rgb(255, 99, 132)',
-              tension: 0.1,
-              fill: false,
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: { position: 'top' },
-              tooltip: { mode: 'index', intersect: false }
-            },
-            scales: {
-              y: { beginAtZero: true, title: { display: true, text: 'Count' } },
-              x: { title: { display: true, text: 'Date' } }
-            }
-          }
-        });
-        setJobChart(jobChartInstance);
-      }
+  const collect = async () => {
+    setBusy(true);
+    setNotice(null);
+    try {
+      const response = await api.post('/api/analytics/collect');
+      setNotice(
+        response.data?.message || 'The collection has been requested. It runs on a schedule.'
+      );
+      await load();
+    } catch (collectError) {
+      setError(
+        collectError?.response?.data?.detail ||
+          collectError?.message ||
+          'The collection could not be started.'
+      );
+    } finally {
+      setBusy(false);
     }
-  }, [analytics, loading, error]);
+  };
 
-  // Cleanup charts on unmount
-  useEffect(() => {
-    return () => {
-      if (reelChart) reelChart.destroy();
-      if (jobChart) jobChart.destroy();
-    };
-  }, [reelChart, jobChart]);
-
-  if (loading) {
-    return (
-      <motion.div
-        initial={reducedMotion ? false : { opacity: 0, y: 30 }}
-        animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-        transition={reducedMotion ? undefined : { duration: 0.6 }}
-      >
-        <motion.h1
-          initial={reducedMotion ? false : { opacity: 0, x: -50 }}
-          animate={reducedMotion ? false : { opacity: 1, x: 0 }}
-          transition={reducedMotion ? undefined : { duration: 0.8, delay: 0.2 }}
-        >
-          Analytics
-        </motion.h1>
-        <motion.p
-          initial={reducedMotion ? false : { opacity: 0, x: 50 }}
-          animate={reducedMotion ? false : { opacity: 1, x: 0 }}
-          transition={reducedMotion ? undefined : { duration: 0.8, delay: 0.4 }}
-        >
-          Loading analytics...
-        </motion.p>
-      </motion.div>
-    );
-  }
-
-  if (error) {
-    return (
-      <motion.div
-        initial={reducedMotion ? false : { opacity: 0, y: 30 }}
-        animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-        transition={reducedMotion ? undefined : { duration: 0.6 }}
-      >
-        <motion.h1
-          initial={reducedMotion ? false : { opacity: 0, x: -50 }}
-          animate={reducedMotion ? false : { opacity: 1, x: 0 }}
-          transition={reducedMotion ? undefined : { duration: 0.8, delay: 0.2 }}
-        >
-          Analytics
-        </motion.h1>
-        <motion.p
-          initial={reducedMotion ? false : { opacity: 0, x: 50 }}
-          animate={reducedMotion ? false : { opacity: 1, x: 0 }}
-          transition={reducedMotion ? undefined : { duration: 0.8, delay: 0.4 }}
-        >
-          Error loading analytics: {error}
-        </motion.p>
-      </motion.div>
-    );
-  }
-
-  if (!analytics) {
-    return (
-      <motion.div
-        initial={reducedMotion ? false : { opacity: 0, y: 30 }}
-        animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-        transition={reducedMotion ? undefined : { duration: 0.6 }}
-      >
-        <motion.h1
-          initial={reducedMotion ? false : { opacity: 0, x: -50 }}
-          animate={reducedMotion ? false : { opacity: 1, x: 0 }}
-          transition={reducedMotion ? undefined : { duration: 0.8, delay: 0.2 }}
-        >
-          Analytics
-        </motion.h1>
-        <motion.p
-          initial={reducedMotion ? false : { opacity: 0, x: 50 }}
-          animate={reducedMotion ? false : { opacity: 1, x: 0 }}
-          transition={reducedMotion ? undefined : { duration: 0.8, delay: 0.4 }}
-        >
-          No analytics data available.
-        </motion.p>
-      </motion.div>
-    );
-  }
-
-  const { reel_stats, job_stats, total_reels, rendering_success_rate, reel_creation_trend, job_creation_trend } = analytics;
+  const overview = insights?.overview || {};
+  const reels = insights?.reels || [];
 
   return (
-    <motion.div
-      initial={reducedMotion ? false : { opacity: 0, y: 30 }}
-      animate={reducedMotion ? false : { opacity: 1, y: 0 }}
-      transition={reducedMotion ? undefined : { duration: 0.6 }}
-    >
-      <motion.h1
-        initial={reducedMotion ? false : { opacity: 0, x: -50 }}
-        animate={reducedMotion ? false : { opacity: 1, x: 0 }}
-        transition={reducedMotion ? undefined : { duration: 0.8, delay: 0.2 }}
-      >
-        Analytics
-      </motion.h1>
-      <motion.p
-        initial={reducedMotion ? false : { opacity: 0, x: 50 }}
-        animate={reducedMotion ? false : { opacity: 1, x: 0 }}
-        transition={reducedMotion ? undefined : { duration: 0.8, delay: 0.4 }}
-      >
-        Summary metrics based on your reel and job data.
-      </motion.p>
+    <div className="page stack" ref={scope}>
+      {error && (
+        <p className="notice notice-error" role="alert" data-animate>
+          {error}
+        </p>
+      )}
+      {notice && (
+        <p className="notice notice-success" role="status" data-animate>
+          {notice}
+        </p>
+      )}
 
-      <motion.div
-        className="analytics-charts"
-        initial={reducedMotion ? false : { opacity: 0 }}
-        animate={reducedMotion ? false : { opacity: 1 }}
-        transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.6 }}
-      >
-        {/* Summary Metrics */}
-        <motion.div
-          className="analytics-summary"
-          initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-          animate={reducedMotion ? false : { opacity: 1, y: 20 }}
-          transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.1 }}
-        >
-          <div className="metric-card">
-            <h3>Total Reels Created</h3>
-            <p>{total_reels}</p>
-          </div>
-          <div className="metric-card">
-            <h3>Rendering Success Rate</h3>
-            <p>{rendering_success_rate}%</p>
-          </div>
-          <div className="metric-card">
-            <h3>Completed Jobs</h3>
-            <p>{job_stats.COMPLETED || 0}</p>
-          </div>
-          <div className="metric-card">
-            <h3>Failed Jobs</h3>
-            <p>{job_stats.FAILED || 0}</p>
-          </div>
-          <div className="metric-card">
-            <h3>Pending Jobs</h3>
-            <p>{job_stats.PENDING || 0}</p>
-          </div>
-          <div className="metric-card">
-            <h3>Processing Jobs</h3>
-            <p>{job_stats.PROCESSING || 0}</p>
-          </div>
-        </motion.div>
+      <section className="metric-row" data-animate>
+        <Metric
+          label="Published Reels"
+          value={overview.total_reels ?? '–'}
+          hint="confirmed by Instagram"
+        />
+        <Metric
+          label="Average reach"
+          value={overview.average_reach ?? '–'}
+          hint="across the published Reels"
+        />
+        <Metric
+          label="Average engagement"
+          value={overview.average_engagement ?? '–'}
+          hint="likes, comments, shares and saves"
+        />
+        <Metric
+          label="Engagement rate"
+          value={overview.engagement_rate ?? '–'}
+          hint="only when the reach is known"
+        />
+      </section>
 
-        {/* Charts */}
-        <motion.div
-          className="analytics-chart-container"
-          initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-          animate={reducedMotion ? false : { opacity: 1, y: 20 }}
-          transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.3 }}
-        >
-          <div className="chart-title">Reel Creation Trend (Last 7 Days)</div>
-          <canvas id="reel-chart" width="400" height="200" />
-        </motion.div>
+      {loading && !insights ? (
+        <p className="muted small" data-animate>
+          Loading the analytics…
+        </p>
+      ) : (
+        <>
+          <div className="analytics-charts" data-animate>
+            <TrendChart
+              id="reel-trend"
+              title="Reels produced"
+              unit="Reels"
+              colour={LIME}
+              labels={(insights?.reel_creation_trend || []).map((row) => row.date)}
+              values={(insights?.reel_creation_trend || []).map((row) => row.count)}
+            />
+            <TrendChart
+              id="job-trend"
+              title="Jobs run"
+              unit="Jobs"
+              colour={VIOLET}
+              labels={(insights?.job_creation_trend || []).map((row) => row.date)}
+              values={(insights?.job_creation_trend || []).map((row) => row.count)}
+            />
+          </div>
 
-        <motion.div
-          className="analytics-chart-container"
-          initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-          animate={reducedMotion ? false : { opacity: 1, y: 20 }}
-          transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.4 }}
-        >
-          <div className="chart-title">Job Creation Trend (Last 7 Days)</div>
-          <canvas id="job-chart" width="400" height="200" />
-        </motion.div>
-      </motion.div>
-    </motion.div>
+          <section className="panel" data-animate>
+            <header className="panel-header">
+              <h3 className="panel-title">The published Reels</h3>
+              <button
+                type="button"
+                className="btn btn-sm"
+                onClick={collect}
+                disabled={busy}
+              >
+                {busy ? 'Requesting…' : 'Collect now'}
+              </button>
+            </header>
+            <div className="panel-body">
+              {reels.length === 0 ? (
+                <div className="empty-state">
+                  <p className="empty-state-title">No metrics yet</p>
+                  <p className="empty-state-body">
+                    Instagram returns the insights of a Reel after it has been
+                    published. Nothing is shown until the API has actually
+                    answered.
+                  </p>
+                </div>
+              ) : (
+                <div className="table-wrap">
+                  <table className="data-table">
+                    <thead>
+                      <tr>
+                        <th>Reel</th>
+                        <th>Published</th>
+                        <th>Reach</th>
+                        <th>Engagement</th>
+                        <th>Rate</th>
+                        <th>Collected</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {reels.map((reel) => (
+                        <tr key={reel.id ?? reel.reel_id}>
+                          <td className="truncate">{reel.title}</td>
+                          <td className="muted small">
+                            {reel.published_at
+                              ? new Date(reel.published_at).toLocaleDateString()
+                              : '–'}
+                          </td>
+                          <td className="mono-value">{reel.reach ?? '–'}</td>
+                          <td className="mono-value">{reel.engagement ?? '–'}</td>
+                          <td className="mono-value">
+                            {reel.engagement_rate ?? '–'}
+                          </td>
+                          <td className="muted small">
+                            {reel.collected_at || reel.metric_timestamp || '–'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </section>
+
+          <section className="panel" data-animate>
+            <header className="panel-header">
+              <h3 className="panel-title">What the data says</h3>
+              <StatusBadge
+                state={
+                  recommendations?.status === 'insufficient_data'
+                    ? 'UNVERIFIED'
+                    : 'READY_TO_PUBLISH'
+                }
+                label={
+                  recommendations?.status === 'insufficient_data'
+                    ? 'Not enough data'
+                    : 'Ready'
+                }
+              />
+            </header>
+            <div className="panel-body">
+              {!recommendations ? (
+                <p className="muted small">
+                  The recommendation engine has not answered yet.
+                </p>
+              ) : recommendations.status === 'insufficient_data' ? (
+                <p className="muted small">
+                  {recommendations.message ||
+                    'Not enough published Reels yet for a reliable recommendation.'}
+                </p>
+              ) : (
+                <div className="kv-list">
+                  {Object.entries(recommendations.recommendations || {}).map(
+                    ([key, value]) => (
+                      <div className="kv" key={key}>
+                        <span>{key.replace(/_/g, ' ')}</span>
+                        <strong>
+                          {value.recommended || value.recommended_bucket}
+                        </strong>
+                      </div>
+                    )
+                  )}
+                  <p className="muted small">
+                    Based on {recommendations.samples} published Reel(s) with
+                    metrics.
+                  </p>
+                </div>
+              )}
+            </div>
+          </section>
+        </>
+      )}
+    </div>
   );
 }

@@ -1,0 +1,552 @@
+/* The Creator Studio.
+ *
+ * Two columns.  The left one holds what the operator has - the clip and
+ * the projects it became - and the right one holds what they set and what
+ * came back.  The projects used to sit under the whole grid, which left
+ * the left column with a column of empty space while the work was below
+ * the fold.
+ */
+
+.creator-workspace {
+  display: grid;
+  grid-template-columns: minmax(320px, 440px) minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: start;
+}
+
+/* The rail is one grid item, so the projects sit directly under the
+   source whatever height the settings on the right reach.  A grid row
+   would have put them under the whole right-hand column. */
+.creator-rail {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.creator-settings {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+/* ------------------------------------------------------------- the dropzone */
+.creator-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  min-height: 320px;
+  padding: var(--space-6);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-inset);
+  text-align: center;
+  transition:
+    border-color var(--dur-micro) var(--ease-out),
+    background-color var(--dur-micro) var(--ease-out);
+}
+
+.creator-dropzone.is-dragging {
+  border-color: var(--lime);
+  background: var(--lime-wash);
+}
+
+.creator-dropzone-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.creator-dropzone-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--line-strong);
+  background: var(--surface-overlay);
+  color: var(--text-mid);
+  font-size: var(--text-xl);
+  line-height: 1;
+}
+
+.creator-dropzone-title {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text-hi);
+}
+
+.creator-dropzone-empty .muted {
+  margin: 0;
+  max-width: 34ch;
+}
+
+.creator-source-video {
+  width: 100%;
+  max-height: 46vh;
+  border-radius: var(--radius-sm);
+  background: #000;
+}
+
+/* ------------------------------------------------------------ the settings */
+.creator-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.creator-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-4);
+}
+
+.creator-form .field small {
+  color: var(--text-lo);
+}
+
+/* The words the recogniser should expect. */
+.creator-hotwords {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--line);
+}
+
+.creator-hotwords small {
+  max-width: 62ch;
+}
+
+.creator-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.creator-toggles label {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: var(--text-sm);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.creator-toggles input {
+  accent-color: var(--lime);
+}
+
+.creator-estimate {
+  margin: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--surface-inset);
+  border: 1px solid var(--line);
+  font-size: var(--text-xs);
+  color: var(--text-mid);
+}
+
+/* ------------------------------------------------------------- the projects */
+.creator-projects {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.creator-project {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-inset);
+}
+
+.creator-project-select {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.creator-project-select.is-selected .creator-project-id {
+  color: var(--lime);
+}
+
+.creator-project-id {
+  font-size: var(--text-sm);
+  color: var(--text-hi);
+}
+
+.creator-project-meta {
+  flex: 1 1 auto;
+  font-size: var(--text-xs);
+  color: var(--text-mid);
+}
+
+.creator-project-actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.creator-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.creator-progress .progress-track {
+  flex: 1 1 auto;
+}
+
+.creator-progress-value {
+  min-width: 38px;
+  text-align: right;
+  font-size: var(--text-xs);
+  color: var(--text-mid);
+}
+
+/* ---------------------------------------------------------------- the review */
+.creator-review {
+  display: grid;
+  grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.creator-stages {
+  list-style: none;
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.creator-stage {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-1) 0;
+  font-size: var(--text-xs);
+  color: var(--text-lo);
+}
+
+.creator-stage-dot {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 auto;
+  border-radius: var(--radius-pill);
+  background: var(--surface-active);
+}
+
+.creator-stage.is-done {
+  color: var(--text-mid);
+}
+
+.creator-stage.is-done .creator-stage-dot {
+  background: var(--teal);
+}
+
+.creator-stage.is-current {
+  color: var(--text-hi);
+  font-weight: 500;
+}
+
+.creator-stage.is-current .creator-stage-dot {
+  background: var(--lime);
+  box-shadow: 0 0 8px var(--lime-glow);
+}
+
+.creator-stage-label {
+  flex: 1 1 auto;
+}
+
+.creator-review-video {
+  width: 100%;
+  max-height: 52vh;
+  margin: var(--space-3) 0;
+  border-radius: var(--radius-sm);
+  background: #000;
+}
+
+/* ------------------------------------------------------------- the presenter */
+.creator-presenter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.creator-provider-list,
+.creator-reference-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.creator-provider-list li,
+.creator-reference-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--text-mid);
+}
+
+.creator-provider-name {
+  font-weight: 500;
+  color: var(--text-hi);
+}
+
+.creator-identity {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+}
+
+@media (max-width: 1080px) {
+  .creator-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  /* One column: everything stacks in the order it is read. */
+  .creator-rail,
+  .creator-settings {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .creator-review {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ------------------------------------------------------- the mode pickers */
+.creator-mode-picker {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.creator-mode-legend {
+  padding: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-hi);
+}
+
+.creator-mode-hint {
+  margin: var(--space-1) 0 var(--space-3);
+  max-width: 62ch;
+}
+
+.creator-mode-options {
+  display: grid;
+  /* Two columns, so the four options make a square block.  An automatic
+     fit left one option alone on a second row, which read as a mistake. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+@media (max-width: 640px) {
+  .creator-mode-options {
+    grid-template-columns: 1fr;
+  }
+}
+
+.creator-mode-option {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    'radio label'
+    '.     note';
+  align-items: start;
+  gap: var(--space-1) var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-inset);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-micro) var(--ease-out),
+    background-color var(--dur-micro) var(--ease-out);
+}
+
+.creator-mode-option:hover {
+  border-color: var(--line-strong);
+}
+
+.creator-mode-option.is-selected {
+  border-color: var(--lime);
+  background: var(--lime-wash);
+}
+
+.creator-mode-option input {
+  grid-area: radio;
+  margin-top: 2px;
+  accent-color: var(--lime);
+}
+
+.creator-mode-label {
+  grid-area: label;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-hi);
+}
+
+.creator-mode-note {
+  grid-area: note;
+  line-height: 1.35;
+}
+
+/* ------------------------------------------------------ the profile banner */
+.creator-profile-note {
+  margin: 0;
+}
+
+/* -------------------------------------------------------- the review detail */
+.creator-review-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.creator-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: var(--space-3);
+}
+
+.creator-fact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-inset);
+}
+
+.creator-fact-label {
+  font-size: var(--text-xs);
+  color: var(--text-lo);
+}
+
+.creator-fact-value {
+  font-size: var(--text-sm);
+  color: var(--text-hi);
+  overflow-wrap: anywhere;
+}
+
+.creator-warnings {
+  padding: var(--space-3) var(--space-4);
+  /* The warning is carried by the amber hairline and the inset surface,
+     not by a thick coloured edge: a 3px side tab is the most recognisable
+     tell of a generated interface. */
+  border: 1px solid var(--amber, var(--line-strong));
+  border-radius: var(--radius-sm);
+  background: var(--surface-inset);
+}
+
+.creator-warnings ul {
+  margin: 0;
+  padding-left: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--text);
+}
+
+.creator-warnings-note {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-mid);
+}
+
+/* --------------------------------------------------------- the caption table */
+.creator-captions-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.creator-captions-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-xs);
+}
+
+.creator-captions-table th,
+.creator-captions-table td {
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+}
+
+.creator-captions-table th {
+  font-weight: 600;
+  color: var(--text-lo);
+  white-space: nowrap;
+  background: var(--surface-inset);
+}
+
+.creator-captions-table td {
+  color: var(--text);
+  min-width: 120px;
+}
+
+.creator-captions-table tr.is-flagged td {
+  background: var(--lime-wash);
+}
+
+/* -------------------------------------------------------- the correction list */
+.creator-correction-list {
+  list-style: none;
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.creator-correction {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.creator-correction-time {
+  font-size: var(--text-xs);
+  color: var(--text-lo);
+}

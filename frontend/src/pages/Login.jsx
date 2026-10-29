@@ -1,91 +1,87 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import api from '../utils/api';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import './auth.css';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const { login, user } = useAuth();
 
-  const handleSubmit = async (e) => {
-    console.log('handleSubmit called');
-    e.preventDefault();
+  useEffect(() => {
+    if (user) window.location.replace('/');
+  }, [user]);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     setError(null);
     setLoading(true);
-    console.log('Login attempt started');
     try {
-      console.log('About to make API call');
-      api.post('/auth/login', new URLSearchParams({
-        username: email,
-        password: password
-      }).toString(), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      })
-      .then(response => {
-        console.log('Login response:', response);
-        console.log('Response data:', response.data);
-        console.log('About to set token');
-        localStorage.setItem('accessToken', response.data.access_token);
-        console.log('Token set in localStorage:', localStorage.getItem('accessToken'));
-        console.log('About to navigate');
-        navigate('/');
-        console.log('Navigation called');
-      })
-      .catch(err => {
-        console.log('API call error:', err);
-        setLoading(false);
-        console.log('Login error:', err);
-        console.log('Error details:', err);
-        if (err.response && err.response.data && err.response.data.detail) {
-          setError(err.response.data.detail);
-        } else {
-          setError('Login failed. Please check your credentials.');
-        }
-      });
+      await login(email, password);
     } catch (err) {
       setLoading(false);
-      console.log('Login error (outer catch):', err);
-      console.log('Error details:', err);
-      if (err.response && err.response.data && err.response.data.detail) {
-        setError(err.response.data.detail);
+      const detail = err?.response?.data?.detail;
+      if (Array.isArray(detail)) {
+        setError(detail.map((item) => item.msg).join(', '));
       } else {
-        setError('Login failed. Please check your credentials.');
+        setError(detail || err?.message || 'Login failed. Please try again.');
       }
     }
   };
 
   return (
-    <div className="page-container">
-      <h1>Login</h1>
-      {error && <p style={{ color: '#ff6b6b' }}>{error}</p>}
-      <form onSubmit={handleSubmit} className="login-form">
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+    <div className="auth-screen">
+      <div className="auth-card">
+        <div className="auth-brand">
+          <span className="shell-brand-mark" aria-hidden="true" />
+          <div>
+            <h1 className="auth-title">Reel Factory</h1>
+            <p className="auth-sub">research in, vertical video out</p>
+          </div>
         </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Logging in...' : 'Login'}
-        </button>
-      </form>
-      <p>
-        Don't have an account? <a href="/register">Register here</a>
-      </p>
+
+        {error && (
+          <p className="notice notice-error" role="alert">
+            {error}
+          </p>
+        )}
+
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="field">
+            <label htmlFor="login-email">Email</label>
+            <input
+              id="login-email"
+              className="input"
+              type="email"
+              autoComplete="username"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              required
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="login-password">Password</label>
+            <input
+              id="login-password"
+              className="input"
+              type="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+            />
+          </div>
+          <button className="btn btn-primary" type="submit" disabled={loading}>
+            {loading ? 'Signing in…' : 'Sign in'}
+          </button>
+        </form>
+
+        <p className="auth-foot">
+          No account yet? <Link to="/register">Create one</Link>.
+        </p>
+      </div>
     </div>
   );
 }

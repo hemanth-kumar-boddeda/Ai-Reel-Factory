@@ -1,0 +1,28 @@
+/* The Analytics page. */
+
+.analytics-charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-5);
+}
+
+.analytics-chart {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  box-shadow: var(--elev-1);
+}
+
+.analytics-chart-canvas {
+  position: relative;
+  height: 180px;
+}
+
+.analytics-chart-canvas canvas {
+  position: absolute;
+  inset: 0;
+}

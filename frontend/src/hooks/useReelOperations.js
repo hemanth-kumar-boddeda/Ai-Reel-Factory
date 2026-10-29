@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react';
-import api from '../utils/api';
+import axios from 'axios';
+
+const API_BASE = 'http://localhost:8000';
 
 export function useReelOperations() {
   const [loading, setLoading] = useState(false);
@@ -9,7 +11,7 @@ export function useReelOperations() {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.post('/api/reels', reelData);
+      const response = await axios.post(`${API_BASE}/api/reels`, reelData);
       setLoading(false);
       return response.data;
     } catch (err) {
@@ -23,7 +25,7 @@ export function useReelOperations() {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.put(`/api/reel/${id}`, updateData);
+      const response = await axios.put(`${API_BASE}/api/reel/${id}`, updateData);
       setLoading(false);
       return response.data;
     } catch (err) {
@@ -37,7 +39,7 @@ export function useReelOperations() {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.get(`/api/reel/${id}`);
+      const response = await axios.get(`${API_BASE}/api/reel/${id}`);
       setLoading(false);
       return response.data;
     } catch (err) {
@@ -51,7 +53,7 @@ export function useReelOperations() {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.post(`/api/reels/${reelId}/render`);
+      const response = await axios.post(`${API_BASE}/api/reels/${reelId}/render`);
       setLoading(false);
       return response.data;
     } catch (err) {
@@ -65,7 +67,7 @@ export function useReelOperations() {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.get(`/api/jobs/${jobId}`);
+      const response = await axios.get(`${API_BASE}/api/jobs/${jobId}`);
       setLoading(false);
       return response.data;
     } catch (err) {
@@ -80,7 +82,7 @@ export function useReelOperations() {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.post(`/api/reels/${reelId}/publish`);
+      const response = await axios.post(`${API_BASE}/api/reels/${reelId}/publish`);
       setLoading(false);
       return response.data;
     } catch (err) {
@@ -94,7 +96,7 @@ export function useReelOperations() {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.post(`/api/reels/${reelId}/schedule`, {
+      const response = await axios.post(`${API_BASE}/api/reels/${reelId}/schedule`, {
         scheduled_at: scheduledAt,
         timezone: timezone
       });
@@ -111,7 +113,7 @@ export function useReelOperations() {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.get(`/api/reels/${reelId}/schedule`);
+      const response = await axios.get(`${API_BASE}/api/reels/${reelId}/schedule`);
       setLoading(false);
       return response.data;
     } catch (err) {
@@ -125,7 +127,7 @@ export function useReelOperations() {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.patch(`/api/reels/${reelId}/schedule`, {
+      const response = await axios.patch(`${API_BASE}/api/reels/${reelId}/schedule`, {
         scheduled_at: scheduledAt,
         timezone: timezone
       });
@@ -142,7 +144,7 @@ export function useReelOperations() {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.post(`/api/reels/${reelId}/schedule/cancel`);
+      const response = await axios.post(`${API_BASE}/api/reels/${reelId}/schedule/cancel`);
       setLoading(false);
       return response.data;
     } catch (err) {
@@ -156,7 +158,7 @@ export function useReelOperations() {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.post(`/api/reels/${reelId}/publish/retry`);
+      const response = await axios.post(`${API_BASE}/api/reels/${reelId}/publish/retry`);
       setLoading(false);
       return response.data;
     } catch (err) {
@@ -170,7 +172,7 @@ export function useReelOperations() {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.get(`/api/reels/${reelId}/publications`);
+      const response = await axios.get(`${API_BASE}/api/reels/${reelId}/publications`);
       setLoading(false);
       return response.data;
     } catch (err) {
@@ -185,7 +187,7 @@ export function useReelOperations() {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.get(`/api/reels/${reelId}/analytics`);
+      const response = await axios.get(`${API_BASE}/api/reels/${reelId}/analytics`);
       setLoading(false);
       return response.data;
     } catch (err) {
@@ -199,7 +201,7 @@ export function useReelOperations() {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.post(`/api/reels/${reelId}/analytics/refresh`);
+      const response = await axios.post(`${API_BASE}/api/reels/${reelId}/analytics/refresh`);
       setLoading(false);
       return response.data;
     } catch (err) {
@@ -213,7 +215,7 @@ export function useReelOperations() {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.get(`/api/reels/${reelId}/analytics/history`);
+      const response = await axios.get(`${API_BASE}/api/reels/${reelId}/analytics/history`);
       setLoading(false);
       return response.data;
     } catch (err) {
@@ -228,7 +230,7 @@ export function useReelOperations() {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.post('/run');
+      const response = await axios.post(`${API_BASE}/run`);
       setLoading(false);
       return response.data;
     } catch (err) {

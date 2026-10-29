@@ -57,11 +57,6 @@ export default function CreateReel() {
   const viewsChartRef = useRef(null);
   const engagementChartRef = useRef(null);
   const interactionChartRef = useRef(null);
-
-  // Helper function to conditionally apply motion props
-  const motionProps = (reducedMotion, props) =>
-    reducedMotion ? {} : props;
-
   // Check if we have a reel from Discover (passed via state)
   useEffect(() => {
     if (location.state && location.state.reel) {
@@ -439,6 +434,7 @@ export default function CreateReel() {
     }
   }, [analyticsHistory]);
 
+
   const handleSchedulePublish = async (date, time, timezone) => {
     if (!reel || !reel.id) return;
 
@@ -732,18 +728,14 @@ export default function CreateReel() {
   if (apiLoading && !reel) {
     return (
       <motion.div
-        {...motionProps(reducedMotion, {
-          initial: { opacity: 0 },
-          animate: { opacity: 1 },
-          transition: { duration: 0.5 }
-        })}
+        initial={reducedMotion ? false : { opacity: 0 }}
+        animate={reducedMotion ? false : { opacity: 1 }}
+        transition={reducedMotion ? undefined : { duration: 0.5 }}
       >
         <motion.h2
-          {...motionProps(reducedMotion, {
-            initial: { opacity: 0, y: 20 },
-            animate: { opacity: 1, y: 0 },
-            transition: { duration: 0.5 }
-          })}
+          initial={reducedMotion ? false : { opacity: 0, y: 20 }}
+          animate={reducedMotion ? false : { opacity: 1, y: 0 }}
+          transition={reducedMotion ? undefined : { duration: 0.5 }}
         >
           Loading...
         </motion.h2>
@@ -754,20 +746,16 @@ export default function CreateReel() {
   if (apiError) {
     return (
       <motion.div
-        {...motionProps(reducedMotion, {
-          initial: { opacity: 0 },
-          animate: { opacity: 1 },
-          transition: { duration: 0.5 }
-        })}
+        initial={reducedMotion ? false : { opacity: 0 }}
+        animate={reducedMotion ? false : { opacity: 1 }}
+        transition={reducedMotion ? undefined : { duration: 0.5 }}
       >
         <motion.p style={{ color: '#ff6b6b' }}>{apiError}</motion.p>
         <motion.button
           onClick={() => setApiError(null)}
-          {...motionProps(reducedMotion, {
-            initial: { opacity: 0, y: 20 },
-            animate: { opacity: 1, y: 0 },
-            transition: { duration: 0.5, delay: 0.2 }
-          })}
+          initial={reducedMotion ? false : { opacity: 0, y: 20 }}
+          animate={reducedMotion ? false : { opacity: 1, y: 0 }}
+          transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.2 }}
         >
           Close
         </motion.button>
@@ -780,27 +768,21 @@ export default function CreateReel() {
     <motion.form
       onSubmit={handleContentSubmit}
       className="create-reel-form"
-      {...motionProps(reducedMotion, {
-        initial: { opacity: 0, y: 20 },
-        animate: { opacity: 1, y: 0 },
-        transition: { duration: 0.5, delay: 0.6 }
-      })}
+      initial={reducedMotion ? false : { opacity: 0, y: 20 }}
+      animate={reducedMotion ? false : { opacity: 1, y: 0 }}
+      transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.6 }}
     >
       <motion.h2
-        {...motionProps(reducedMotion, {
-          initial: { opacity: 0, x: -50 },
-          animate: { opacity: 1, x: 0 },
-          transition: { duration: 0.8, delay: 0.2 }
-        })}
+        initial={reducedMotion ? false : { opacity: 0, x: -50 }}
+        animate={reducedMotion ? false : { opacity: 1, x: 0 }}
+        transition={reducedMotion ? undefined : { duration: 0.8, delay: 0.2 }}
       >
         Step 1: Content
       </motion.h2>
       <motion.p
-        {...motionProps(reducedMotion, {
-          initial: { opacity: 0, x: 50 },
-          animate: { opacity: 1, x: 0 },
-          transition: { duration: 0.8, delay: 0.4 }
-        })}
+        initial={reducedMotion ? false : { opacity: 0, x: 50 }}
+        animate={reducedMotion ? false : { opacity: 1, x: 0 }}
+        transition={reducedMotion ? undefined : { duration: 0.8, delay: 0.4 }}
       >
         Define what your reel will be about.
       </motion.p>
@@ -852,11 +834,6 @@ export default function CreateReel() {
         disabled={apiLoading}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        {...motionProps(reducedMotion, {
-          initial: { opacity: 0, y: 0 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.5 }
-        })}
       >
         {apiLoading ? 'Creating...' : 'Continue to Configure'}
       </motion.button>
@@ -865,27 +842,21 @@ export default function CreateReel() {
 
   const renderConfigure = () => (
     <motion.div
-      {...motionProps(reducedMotion, {
-        initial: { opacity: 0, y: 20 },
-        animate: { opacity: 1, y: 0 },
-        transition: { duration: 0.5, delay: 0.6 }
-      })}
+      initial={reducedMotion ? false : { opacity: 0, y: 20 }}
+      animate={reducedMotion ? false : { opacity: 1, y: 0 }}
+      transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.6 }}
     >
       <motion.h2
-        {...motionProps(reducedMotion, {
-          initial: { opacity: 0, x: -50 },
-          animate: { opacity: 1, x: 0 },
-          transition: { duration: 0.8, delay: 0.2 }
-        })}
+        initial={reducedMotion ? false : { opacity: 0, x: -50 }}
+        animate={reducedMotion ? false : { opacity: 1, x: 0 }}
+        transition={reducedMotion ? undefined : { duration: 0.8, delay: 0.2 }}
       >
         Step 2: Configure
       </motion.h2>
       <motion.p
-        {...motionProps(reducedMotion, {
-          initial: { opacity: 0, x: 50 },
-          animate: { opacity: 1, x: 0 },
-          transition: { duration: 0.8, delay: 0.4 }
-        })}
+        initial={reducedMotion ? false : { opacity: 0, x: 50 }}
+        animate={reducedMotion ? false : { opacity: 1, x: 0 }}
+        transition={reducedMotion ? undefined : { duration: 0.8, delay: 0.4 }}
       >
         Configure the properties of your reel.
       </motion.p>
@@ -1535,12 +1506,12 @@ export default function CreateReel() {
     if (!canvas.getContext) return;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
+
     const labels = history.map(h => new Date(h.metric_timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
     const data = history.map(h => h.metrics?.views || 0);
-    
+
     if (labels.length === 0) return;
-    
+
     // Simple line chart
     ctx.beginPath();
     ctx.moveTo(0, canvas.height - (data[0] / Math.max(...data) * (canvas.height - 20) + 10));
@@ -1552,7 +1523,7 @@ export default function CreateReel() {
     ctx.strokeStyle = '#3b82f6';
     ctx.lineWidth = 2;
     ctx.stroke();
-    
+
     // Draw points
     labels.forEach((label, i) => {
       const x = (i / (labels.length - 1)) * (canvas.width - 20) + 10;
@@ -1568,16 +1539,16 @@ export default function CreateReel() {
     if (!canvas.getContext) return;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
+
     const labels = history.map(h => new Date(h.metric_timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
     const data = history.map(h => {
       const views = h.metrics?.views || 0;
       const engagements = (h.metrics?.likes || 0) + (h.metrics?.comments || 0) + (h.metrics?.shares || 0) + (h.metrics?.saved || 0);
       return views > 0 ? (engagements / views * 100) : 0;
     });
-    
+
     if (labels.length === 0) return;
-    
+
     // Simple line chart
     ctx.beginPath();
     ctx.moveTo(0, canvas.height - (data[0] / Math.max(...data) * (canvas.height - 20) + 10));
@@ -1589,7 +1560,7 @@ export default function CreateReel() {
     ctx.strokeStyle = '#10b981';
     ctx.lineWidth = 2;
     ctx.stroke();
-    
+
     // Draw points
     labels.forEach((label, i) => {
       const x = (i / (labels.length - 1)) * (canvas.width - 20) + 10;
@@ -1605,37 +1576,37 @@ export default function CreateReel() {
     if (!canvas.getContext) return;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
+
     const labels = history.map(h => new Date(h.metric_timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
     const likesData = history.map(h => h.metrics?.likes || 0);
     const commentsData = history.map(h => h.metrics?.comments || 0);
     const sharesData = history.map(h => h.metrics?.shares || 0);
     const savesData = history.map(h => h.metrics?.saved || 0);
-    
+
     if (labels.length === 0) return;
-    
+
     // Bar chart
     const barWidth = (canvas.width - 40) / (labels.length * 4 + 1);
     labels.forEach((label, i) => {
       const x = 20 + i * (barWidth * 4) + barWidth;
-      
+
       // Likes
       ctx.fillStyle = '#ef4444';
       ctx.fillRect(x, canvas.height - 20 - (likesData[i] / Math.max(...likesData) * (canvas.height - 40) + 10), barWidth, likesData[i] / Math.max(...likesData) * (canvas.height - 40));
-      
+
       // Comments
       ctx.fillStyle = '#f97316';
       ctx.fillRect(x + barWidth, canvas.height - 20 - (commentsData[i] / Math.max(...commentsData) * (canvas.height - 40) + 10), barWidth, commentsData[i] / Math.max(...commentsData) * (canvas.height - 40));
-      
+
       // Shares
       ctx.fillStyle = '#eab308';
       ctx.fillRect(x + barWidth * 2, canvas.height - 20 - (sharesData[i] / Math.max(...sharesData) * (canvas.height - 40) + 10), barWidth, sharesData[i] / Math.max(...sharesData) * (canvas.height - 40));
-      
+
       // Saves
       ctx.fillStyle = '#8b5cf6';
       ctx.fillRect(x + barWidth * 3, canvas.height - 20 - (savesData[i] / Math.max(...savesData) * (canvas.height - 40) + 10), barWidth, savesData[i] / Math.max(...savesData) * (canvas.height - 40));
     });
-    
+
     // Legend
     ctx.font = '10px system-ui';
     ctx.fillStyle = '#6b7280';

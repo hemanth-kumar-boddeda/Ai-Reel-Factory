@@ -1,17 +1,17 @@
 import { createRoot } from 'react-dom/client'
-import './styles/globals.css'
+import './index.css'
 import App from './App.jsx'
-import { BrowserRouter } from 'react-router-dom'
-
-console.log('Main.jsx is running');
+import { AuthProvider } from './context/AuthContext.jsx';
 
 const rootEl = document.getElementById('root');
 if (rootEl) {
   const root = createRoot(rootEl);
+  // The auth provider has to wrap the app: useAuth() is used by the shell
+  // and by every page.
   root.render(
-    <BrowserRouter>
+    <AuthProvider>
       <App />
-    </BrowserRouter>
+    </AuthProvider>
   );
 } else {
   console.error('Root element not found');

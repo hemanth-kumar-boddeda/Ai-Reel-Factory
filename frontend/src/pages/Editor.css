@@ -1,0 +1,207 @@
+/* Editor Page Styles */
+.editor-page {
+  padding: var(--spacing-6);
+  min-height: calc(100vh - 64px);
+}
+
+.editor-page h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0 0 var(--spacing-4) 0;
+}
+
+/* Layout */
+.editor-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-6);
+  align-items: start;
+}
+
+/* Video Preview Section */
+.editor-preview {
+  background-color: var(--background-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-5);
+}
+
+.editor-preview h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0 0 var(--spacing-3) 0;
+}
+
+.editor-preview video {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius);
+  background-color: #000;
+}
+
+.placeholder {
+  text-align: center;
+  padding: var(--spacing-6);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Editor Controls Section */
+.editor-controls {
+  background-color: var(--background-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-5);
+}
+
+.editor-controls h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0 0 var(--spacing-3) 0;
+}
+
+/* Form Styles */
+.editor-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.editor-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.editor-form-label {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+.editor-form-input,
+.editor-form-select,
+.editor-form-textarea {
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--sans);
+  font-size: 1rem;
+  background-color: var(--bg);
+  color: var(--text);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.editor-form-input:focus,
+.editor-form-select:focus,
+.editor-form-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+.editor-form-input:disabled,
+.editor-form-select:disabled,
+.editor-form-textarea:disabled {
+  background-color: var(--accent-disabled, #f3f4f6);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.editor-form-input::placeholder,
+.editor-form-textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.editor-form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Form validation */
+.editor-form-input.error,
+.editor-form-select.error,
+.editor-form-textarea.error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.editor-form-error {
+  font-size: 0.75rem;
+  color: #ef4444;
+  font-weight: 500;
+  margin-top: var(--spacing-1);
+}
+
+/* Save Button Styles */
+.editor-save-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3) var(--spacing-5);
+  border-radius: var(--radius);
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border: none;
+  color: white;
+  background-color: var(--accent);
+}
+
+.editor-save-button:hover:not(:disabled) {
+  background-color: var(--accent-hover, #7c3aed);
+}
+
+.editor-save-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Alert Styles */
+.editor-alert {
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--radius);
+  margin-bottom: var(--spacing-4);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.editor-alert-success {
+  background-color: rgba(78, 205, 196, 0.1);
+  border: 1px solid rgba(78, 205, 196, 0.3);
+  color: #4ecdc4;
+}
+
+.editor-alert-error {
+  background-color: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  color: #ff6b6b;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .editor-page {
+    padding: var(--spacing-4);
+  }
+
+  .editor-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .editor-page h1 {
+    font-size: 1.75rem;
+  }
+
+  .editor-preview h2,
+  .editor-controls h2 {
+    font-size: 1.25rem;
+  }
+}

@@ -1,16 +1,18 @@
 import { motion, useReducedMotion } from 'framer-motion';
-import { useParams, useNavigate } from 'react-router-dom';
+import api from '../utils/api';
+import AuthenticatedVideo from '../components/reel/AuthenticatedVideo';
+import { useParams } from 'react-router-dom';
 import { useReel } from '../hooks/useReel';
 import { useState, useEffect } from 'react';
-import api from '../utils/api';
+import axios from 'axios';
+import Card from '../components/shared/Card';
+import Button from '../components/shared/Button';
+import Input from '../components/shared/Input';
+import './Editor.css';
 
 export default function Editor() {
   const reducedMotion = useReducedMotion();
-  // Helper function to conditionally apply motion props
-  const motionProps = (reducedMotion, props) =>
-    reducedMotion ? {} : props;
   const { reelId } = useParams();
-  const navigate = useNavigate();
   const { reels: allReels, loading, error } = useReel();
 
   const [reel, setReel] = useState(null);
@@ -18,10 +20,14 @@ export default function Editor() {
   const [saveError, setSaveError] = useState(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [videoUrl, setVideoUrl] = useState(null);
+  const [isRendering, setIsRendering] = useState(false);
+  const [renderMessage, setRenderMessage] = useState('');
 
   // Fetch specific reel data when component loads or reelId changes
   useEffect(() => {
+    let cancelled = false;
     const fetchReel = async () => {
+      if (cancelled) return;
       try {
         const response = await api.get(`/api/reel/${reelId}`);
         const fetchedReel = response.data;
@@ -35,28 +41,36 @@ export default function Editor() {
               // Merge UI controls from research_data into the reel object for form display
               Object.assign(reelWithControls, researchData.uiControls);
             }
-          } catch (e) {
+          } catch (_e) { // eslint-disable-line no-unused-vars
             // If research_data is not JSON, ignore UI control parsing
           }
         }
 
-        setReel(reelWithControls);
-        // Set video URL if video exists
-        if (fetchedReel.video_path) {
-          setVideoUrl(`http://localhost:8000/video/${fetchedReel.id}`);
+        if (!cancelled) {
+          setReel(reelWithControls);
+          // Set video URL if video exists
+          if (fetchedReel.video_path) {
+            setVideoUrl(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'}/video/${fetchedReel.id}`);
+          }
         }
       } catch (err) {
-        console.error('Error fetching reel:', err);
+        if (!cancelled) {
+          console.error('Error fetching reel:', err);
+        }
       }
     };
 
     if (reelId) {
       fetchReel();
     }
+    return () => {
+      cancelled = true;
+    };
   }, [reelId]);
 
   // Fallback to useReel hook data if direct fetch fails
   useEffect(() => {
+    let cancelled = false;
     if (!reel && allReels.length > 0) {
       const foundReel = allReels.find(r => r.id === parseInt(reelId));
       if (foundReel) {
@@ -68,32 +82,35 @@ export default function Editor() {
               // Merge UI controls from research_data into the reel object for form display
               Object.assign(reelWithControls, researchData.uiControls);
             }
-          } catch (e) {
+          } catch (_e) { // eslint-disable-line no-unused-vars
             // If research_data is not JSON, ignore UI control parsing
           }
         }
-        setReel(reelWithControls);
-        if (foundReel.video_path) {
-          setVideoUrl(`http://localhost:8000/video/${foundReel.id}`);
+        if (!cancelled) {
+          setReel(reelWithControls);
+          if (foundReel.video_path) {
+            setVideoUrl(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'}/video/${foundReel.id}`);
+          }
         }
       }
     }
-  }, [allReels, reelId]);
+    return () => {
+      cancelled = true;
+    };
+  }, [allReels, reelId, reel]);
 
   if (loading && !reel) return (
     <motion.div
-      {...motionProps(reducedMotion, {
-        initial: { opacity: 0 },
-        animate: { opacity: 1 },
-        transition: { duration: 0.5 }
-      })}
+      initial={reducedMotion ? false : { opacity: 0 }}
+      animate={reducedMotion ? false : { opacity: 1 }}
+      transition={reducedMotion ? undefined : { duration: 0.5 }}
+      className="editor-page"
     >
       <motion.h2
-        {...motionProps(reducedMotion, {
-          initial: { opacity: 0, y: 20 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.5 }
-        })}
+        initial={reducedMotion ? false : { opacity: 0, y: 20 }}
+        animate={reducedMotion ? false : { opacity: 1, y: 0 }}
+        transition={reducedMotion ? undefined : { duration: 0.5 }}
+        className="editor-page-h2"
       >
         Loading...
       </motion.h2>
@@ -102,39 +119,34 @@ export default function Editor() {
 
   if (error && !reel) return (
     <motion.div
-      {...motionProps(reducedMotion, {
-        initial: { opacity: 0 },
-        animate: { opacity: 1 },
-        transition: { duration: 0.5 }
-      })}
+      initial={reducedMotion ? false : { opacity: 0 }}
+      animate={reducedMotion ? false : { opacity: 1 }}
+      transition={reducedMotion ? undefined : { duration: 0.5 }}
+      className="editor-page"
     >
       <motion.h2
-        {...motionProps(reducedMotion, {
-          initial: { opacity: 0, y: 20 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.5 }
-        })}
+        initial={reducedMotion ? false : { opacity: 0, y: 20 }}
+        animate={reducedMotion ? false : { opacity: 1, y: 0 }}
+        transition={reducedMotion ? undefined : { duration: 0.5 }}
+        className="editor-page-h2"
       >
         Error loading data
       </motion.h2>
       <motion.p
-        {...motionProps(reducedMotion, {
-          initial: { opacity: 0, x: 20 },
-          animate: { opacity: 1, x: 0 },
-          transition: { duration: 0.5, delay: 0.2 }
-        })}
+        initial={reducedMotion ? false : { opacity: 0, x: 20 }}
+        animate={reducedMotion ? false : { opacity: 1, x: 0 }}
+        transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.2 }}
+        className="editor-page-p"
       >
         {error.message || 'An unknown error occurred'}
       </motion.p>
       <motion.button
-        {...motionProps(reducedMotion, {
-          initial: { opacity: 0, y: 20 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.5, delay: 0.5 }
-        })}
+        initial={reducedMotion ? false : { opacity: 0, y: 20 }}
+        animate={reducedMotion ? false : { opacity: 1, y: 0 }}
+        transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.5 }}
         onClick={() => window.location.reload()}
       >
-        Try again
+        <span className="btn btn-outline btn-medium">Try again</span>
       </motion.button>
     </motion.div>
   );
@@ -142,41 +154,35 @@ export default function Editor() {
   if (!reel) {
     return (
       <motion.div
-        {...motionProps(reducedMotion, {
-          initial: { opacity: 0 },
-          animate: { opacity: 1 },
-          transition: { duration: 0.5 }
-        })}
+        initial={reducedMotion ? false : { opacity: 0 }}
+        animate={reducedMotion ? false : { opacity: 1 }}
+        transition={reducedMotion ? undefined : { duration: 0.5 }}
+        className="editor-page"
       >
         <motion.h2
-          {...motionProps(reducedMotion, {
-            initial: { opacity: 0, y: 20 },
-            animate: { opacity: 1, y: 0 },
-            transition: { duration: 0.5 }
-          })}
+          initial={reducedMotion ? false : { opacity: 0, y: 20 }}
+          animate={reducedMotion ? false : { opacity: 1, y: 0 }}
+          transition={reducedMotion ? undefined : { duration: 0.5 }}
+          className="editor-page-h2"
         >
           Reel not found
         </motion.h2>
         {allReels.length === 0 ? (
           <motion.p
-            {...motionProps(reducedMotion, {
-              initial: { opacity: 0, x: 20 },
-              animate: { opacity: 1, x: 0 },
-              transition: { duration: 0.5, delay: 0.2 }
-            })}
+            initial={reducedMotion ? false : { opacity: 0, x: 20 }}
+            animate={reducedMotion ? false : { opacity: 1, x: 0 }}
+            transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.2 }}
+            className="editor-page-p"
           >
             No reels available yet. Create a reel to edit.
           </motion.p>
         ) : null}
         <motion.button
-          {...motionProps(reducedMotion, {
-            initial: { opacity: 0, y: 20 },
-            animate: { opacity: 1, y: 0 },
-            transition: { duration: 0.5, delay: 0.4 }
-          })}
-          asChild
+          initial={reducedMotion ? false : { opacity: 0, y: 20 }}
+          animate={reducedMotion ? false : { opacity: 1, y: 0 }}
+          transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.4 }}
         >
-          <a href="/create" style={{ textDecoration: 'none' }}>
+          <a href="/create" className="btn btn-outline btn-medium">
             Create Reel
           </a>
         </motion.button>
@@ -211,7 +217,7 @@ export default function Editor() {
       if (reel.research_data) {
         try {
           mergedResearchData = JSON.parse(reel.research_data);
-        } catch (e) {
+        } catch (_e) { // eslint-disable-line no-unused-vars
           // If not JSON, treat as plain text and preserve it
           mergedResearchData = { legacyText: reel.research_data };
         }
@@ -224,6 +230,9 @@ export default function Editor() {
       // Also update script if provided
       if (reel.script !== undefined && reel.script.trim() !== '') {
         updateData.script = reel.script;
+      }
+      if (reel.captions !== undefined && reel.captions.trim() !== '') {
+        updateData.caption_text = reel.captions;
       }
 
       const response = await api.put(`/api/reel/${reel.id}`, updateData);
@@ -243,127 +252,106 @@ export default function Editor() {
     }
   };
 
+  const handleRender = async () => {
+    if (!reel) return;
+    setIsRendering(true);
+    setRenderMessage('');
+    try {
+      const response = await api.post(`/api/reels/${reel.id}/render`);
+      setRenderMessage(`Render job ${response.data.id} queued. Track it in Jobs.`);
+    } catch (err) {
+      setRenderMessage(err?.response?.data?.detail || 'Could not queue the render job.');
+    } finally {
+      setIsRendering(false);
+    }
+  };
+
   return (
     <motion.div
-      {...motionProps(reducedMotion, {
-        initial: { opacity: 0, y: 30 },
-        animate: { opacity: 1, y: 0 },
-        transition: { duration: 0.6 }
-      })}
+      initial={reducedMotion ? false : { opacity: 0, y: 30 }}
+      animate={reducedMotion ? false : { opacity: 1, y: 0 }}
+      transition={reducedMotion ? undefined : { duration: 0.6 }}
       className="editor-page"
     >
       <motion.h1
-        {...motionProps(reducedMotion, {
-          initial: { opacity: 0, x: -50 },
-          animate: { opacity: 1, x: 0 },
-          transition: { duration: 0.8, delay: 0.2 }
-        })}
+        initial={reducedMotion ? false : { opacity: 0, x: -50 }}
+        animate={reducedMotion ? false : { opacity: 1, x: 0 }}
+        transition={reducedMotion ? undefined : { duration: 0.8, delay: 0.2 }}
+        className="editor-page-h1"
       >
         Reel Editor
       </motion.h1>
 
       {saveError && (
-        <motion.div
-          {...motionProps(reducedMotion, {
-            initial: { opacity: 0 },
-            animate: { opacity: 1 },
-            transition: { duration: 0.5 }
-          })}
-        >
+        <Card elevated className="editor-alert editor-alert-error">
           <motion.p
-            {...motionProps(reducedMotion, {
-              initial: { opacity: 0, x: 20 },
-              animate: { opacity: 1, x: 0 },
-              transition: { duration: 0.5, delay: 0.2 }
-            })}
-            style={{ color: '#ff6b6b' }}
+            initial={reducedMotion ? false : { opacity: 0, x: 20 }}
+            animate={reducedMotion ? false : { opacity: 1, x: 0 }}
+            transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.2 }}
           >
             {saveError}
           </motion.p>
           <motion.button
-            {...motionProps(reducedMotion, {
-              initial: { opacity: 0, y: 20 },
-              animate: { opacity: 1, y: 0 },
-              transition: { duration: 0.5, delay: 0.5 }
-            })}
+            initial={reducedMotion ? false : { opacity: 0, y: 20 }}
+            animate={reducedMotion ? false : { opacity: 1, y: 0 }}
+            transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.5 }}
             onClick={() => setSaveError(null)}
           >
-            Close
+            <span className="btn btn-outline btn-small">Close</span>
           </motion.button>
-        </motion.div>
+        </Card>
       )}
 
       {saveSuccess && (
-        <motion.div
-          {...motionProps(reducedMotion, {
-            initial: { opacity: 0 },
-            animate: { opacity: 1 },
-            transition: { duration: 0.5 }
-          })}
-        >
+        <Card elevated className="editor-alert editor-alert-success">
           <motion.p
-            {...motionProps(reducedMotion, {
-              initial: { opacity: 0, x: 20 },
-              animate: { opacity: 1, x: 0 },
-              transition: { duration: 0.5, delay: 0.2 }
-            })}
-            style={{ color: '#4ecdc4' }}
+            initial={reducedMotion ? false : { opacity: 0, x: 20 }}
+            animate={reducedMotion ? false : { opacity: 1, x: 0 }}
+            transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.2 }}
           >
             Changes saved successfully!
           </motion.p>
-        </motion.div>
+        </Card>
       )}
 
       <motion.div
         className="editor-layout"
-        {...motionProps(reducedMotion, {
-          initial: { opacity: 0 },
-          animate: { opacity: 1 },
-          transition: { duration: 0.5, delay: 0.5 }
-        })}
+        initial={reducedMotion ? false : { opacity: 0 }}
+        animate={reducedMotion ? false : { opacity: 1 }}
+        transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.5 }}
       >
         {/* Video Preview Section */}
         <motion.div
           className="editor-preview"
-          {...motionProps(reducedMotion, {
-            initial: { opacity: 0, x: -30 },
-            animate: { opacity: 1, x: 0 },
-            transition: { duration: 0.6, delay: 0.6 }
-          })}
+          initial={reducedMotion ? false : { opacity: 0, x: -30 }}
+          animate={reducedMotion ? false : { opacity: 1, x: 0 }}
+          transition={reducedMotion ? undefined : { duration: 0.6, delay: 0.6 }}
         >
           <motion.h2
-            {...motionProps(reducedMotion, {
-              initial: { opacity: 0, y: 20 },
-              animate: { opacity: 1, y: 0 },
-              transition: { duration: 0.5 }
-            })}
+            initial={reducedMotion ? false : { opacity: 0, y: 20 }}
+            animate={reducedMotion ? false : { opacity: 1, y: 0 }}
+            transition={reducedMotion ? undefined : { duration: 0.5 }}
+            className="editor-preview-h2"
           >
             Preview
           </motion.h2>
           {videoUrl ? (
-            <video
+            <AuthenticatedVideo
+              reelId={reelId}
               controls
               autoPlay
-              muted
-              loop
-              playsInline
-              style={{ width: '100%', maxWidth: '400px', borderRadius: '8px' }}
-              src={videoUrl}
-            >
-              Your browser does not support the video tag.
-            </video>
+              style={{ width: '100%', maxWidth: '400px', borderRadius: 'var(--radius)' }}
+            />
           ) : (
             <motion.div
               className="placeholder"
-              {...motionProps(reducedMotion, {
-                initial: { opacity: 0, scale: 0.8 },
-                animate: { opacity: 1, scale: 1 },
-                transition: { duration: 0.5, delay: 0.2 }
-              })}
+              initial={reducedMotion ? false : { opacity: 0, scale: 0.8 }}
+              animate={reducedMotion ? false : { opacity: 1, scale: 1 }}
+              transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.2 }}
             >
               Video Preview
               {!reel.video_path && (
-                <p style={{ marginTop: '10px', color: '#666', fontSize: '14px' }}>
+                <p style={{ marginTop: 'var(--spacing-2)', color: 'var(--text-muted)', fontSize: '0.875rem' }}>
                   No video generated yet
                 </p>
               )}
@@ -374,169 +362,196 @@ export default function Editor() {
         {/* Editor Controls Section */}
         <motion.div
           className="editor-controls"
-          {...motionProps(reducedMotion, {
-            initial: { opacity: 0, x: 30 },
-            animate: { opacity: 1, x: 0 },
-            transition: { duration: 0.6, delay: 0.8 }
-          })}
+          initial={reducedMotion ? false : { opacity: 0, x: 30 }}
+          animate={reducedMotion ? false : { opacity: 1, x: 0 }}
+          transition={reducedMotion ? undefined : { duration: 0.6, delay: 0.8 }}
         >
           <motion.h2
-            {...motionProps(reducedMotion, {
-              initial: { opacity: 0, y: 20 },
-              animate: { opacity: 1, y: 0 },
-              transition: { duration: 0.5 }
-            })}
+            initial={reducedMotion ? false : { opacity: 0, y: 20 }}
+            animate={reducedMotion ? false : { opacity: 1, y: 0 }}
+            transition={reducedMotion ? undefined : { duration: 0.5 }}
+            className="editor-controls-h2"
           >
             Reel Properties
           </motion.h2>
 
           {/* Editable Fields */}
-          <div style={{ display: 'grid', gap: '16px' }}>
-            <div>
-              <label htmlFor="hook" className="block mb-2 font-medium">Hook</label>
-              <input
+          <div className="editor-form">
+            <div className="editor-form-group">
+              <label htmlFor="hook" className="editor-form-label">
+                Hook
+              </label>
+              <Input
                 type="text"
                 id="hook"
                 value={reel.hook || ''}
                 onChange={(e) => {
                   setReel(prev => ({ ...prev, hook: e.target.value }));
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="editor-form-input"
                 placeholder="Enter hook text..."
               />
             </div>
 
-            <div>
-              <label htmlFor="script" className="block mb-2 font-medium">Script</label>
-              <textarea
+            <div className="editor-form-group">
+              <label htmlFor="script" className="editor-form-label">
+                Script
+              </label>
+              <Input
+                type="textarea"
                 id="script"
                 value={reel.script || ''}
                 onChange={(e) => {
                   setReel(prev => ({ ...prev, script: e.target.value }));
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="editor-form-textarea"
                 rows={4}
                 placeholder="Enter script text..."
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="editor-form-group editor-grid-cols-2">
               <div>
-                <label htmlFor="duration" className="block mb-2 font-medium">Duration (seconds)</label>
-                <input
+                <label htmlFor="duration" className="editor-form-label">
+                  Duration (seconds)
+                </label>
+                <Input
                   type="number"
                   id="duration"
                   value={reel.duration || 12}
                   onChange={(e) => {
                     setReel(prev => ({ ...prev, duration: parseInt(e.target.value) || 12 }));
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="editor-form-input"
                   min="5"
                   max="60"
                 />
               </div>
 
               <div>
-                <label htmlFor="tone" className="block mb-2 font-medium">Tone</label>
-                <select
+                <label htmlFor="tone" className="editor-form-label">
+                  Tone
+                </label>
+                <Input
+                  type="select"
                   id="tone"
                   value={reel.tone || 'informative'}
                   onChange={(e) => {
                     setReel(prev => ({ ...prev, tone: e.target.value }));
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="editor-form-select"
                 >
                   <option value="informative">Informative</option>
                   <option value="exciting">Exciting</option>
                   <option value="calm">Calm</option>
                   <option value="urgent">Urgent</option>
                   <option value="humorous">Humorous</option>
-                </select>
+                </Input>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="editor-form-group editor-grid-cols-2">
               <div>
-                <label htmlFor="visualStyle" className="block mb-2 font-medium">Visual Style</label>
-                <select
+                <label htmlFor="visualStyle" className="editor-form-label">
+                  Visual Style
+                </label>
+                <Input
+                  type="select"
                   id="visualStyle"
                   value={reel.visualStyle || 'modern'}
                   onChange={(e) => {
                     setReel(prev => ({ ...prev, visualStyle: e.target.value }));
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="editor-form-select"
                 >
                   <option value="modern">Modern</option>
                   <option value="cinematic">Cinematic</option>
                   <option value="minimal">Minimal</option>
                   <option value="vibrant">Vibrant</option>
                   <option value="classic">Classic</option>
-                </select>
+                </Input>
               </div>
 
               <div>
-                <label htmlFor="voice" className="block mb-2 font-medium">Voice</label>
-                <select
+                <label htmlFor="voice" className="editor-form-label">
+                  Voice
+                </label>
+                <Input
+                  type="select"
                   id="voice"
                   value={reel.voice || 'neutral'}
                   onChange={(e) => {
                     setReel(prev => ({ ...prev, voice: e.target.value }));
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="editor-form-select"
                 >
                   <option value="neutral">Neutral</option>
                   <option value="female">Female</option>
                   <option value="male">Male</option>
                   <option value="energetic">Energetic</option>
                   <option value="calm">Calm</option>
-                </select>
+                </Input>
               </div>
             </div>
 
-            <div>
-              <label htmlFor="captions" className="block mb-2 font-medium">Captions</label>
-              <select
+            <div className="editor-form-group">
+              <label htmlFor="captions" className="editor-form-label">
+                Captions
+              </label>
+              <Input
+                type="select"
                 id="captions"
                 value={reel.captions || 'none'}
                 onChange={(e) => {
                   setReel(prev => ({ ...prev, captions: e.target.value }));
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="editor-form-select"
               >
                 <option value="none">None</option>
                 <option value="auto">Auto-generated</option>
                 <option value="manual">Manual</option>
-              </select>
+              </Input>
             </div>
 
-            <div>
-              <label htmlFor="cta" className="block mb-2 font-medium">Call to Action</label>
-              <input
+            <div className="editor-form-group">
+              <label htmlFor="cta" className="editor-form-label">
+                Call to Action
+              </label>
+              <Input
                 type="text"
                 id="cta"
                 value={reel.cta || ''}
                 onChange={(e) => {
                   setReel(prev => ({ ...prev, cta: e.target.value }));
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="editor-form-input"
                 placeholder="Enter CTA text (e.g., 'Follow for more')"
               />
             </div>
-          </div>
 
-          {/* Save Button */}
-          <motion.button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="mt-6 w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium rounded-md hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-200 focus:ring-blue-500 transition-all duration-200"
-            {...motionProps(reducedMotion, {
-              initial: { opacity: 0, y: 20 },
-              animate: { opacity: 1, y: 0 },
-              transition: { duration: 0.5, delay: 0.8 }
-            })}
-          >
-            {isSaving ? 'Saving...' : 'Save Changes'}
-          </motion.button>
+            {/* Save Button */}
+            <motion.button
+              onClick={handleSave}
+              disabled={isSaving}
+              className="editor-save-button"
+              initial={reducedMotion ? false : { opacity: 0, y: 20 }}
+              animate={reducedMotion ? false : { opacity: 1, y: 0 }}
+              transition={reducedMotion ? undefined : { duration: 0.5, delay: 0.8 }}
+            >
+              {isSaving ? 'Saving...' : 'Save Changes'}
+            </motion.button>
+            {!reel.video_path && (
+              <motion.button
+                type="button"
+                onClick={handleRender}
+                disabled={isRendering}
+                className="editor-save-button"
+              >
+                {isRendering ? 'Queueing render...' : 'Render this Reel'}
+              </motion.button>
+            )}
+            {renderMessage && <p role="status">{renderMessage}</p>}
+          </div>
         </motion.div>
       </motion.div>
     </motion.div>

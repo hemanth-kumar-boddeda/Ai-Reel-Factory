@@ -1,0 +1,255 @@
+/* The review step before a Reel is published.
+   It uses the design tokens, so the dialog looks like the rest of the app
+   rather than like a different product. */
+
+.review-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  background: rgba(4, 5, 7, 0.78);
+  backdrop-filter: blur(6px);
+}
+
+.review-dialog {
+  width: min(1080px, 100%);
+  max-height: 92vh;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-6) var(--space-5);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  box-shadow: var(--elev-3);
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.review-header h2 {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--text-hi);
+  letter-spacing: var(--tracking-display);
+}
+
+.review-close {
+  border: none;
+  background: transparent;
+  color: var(--text-mid);
+  font-size: var(--text-2xl);
+  line-height: 1;
+  cursor: pointer;
+  transition: color var(--dur-micro) var(--ease-out);
+}
+
+.review-close:hover {
+  color: var(--text-hi);
+}
+
+.review-body {
+  display: grid;
+  grid-template-columns: minmax(220px, 300px) 1fr;
+  gap: var(--space-6);
+  align-items: start;
+}
+
+@media (max-width: 760px) {
+  .review-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+.review-video {
+  width: 100%;
+  border-radius: var(--radius-md);
+  background: #000;
+  border: 1px solid var(--line);
+}
+
+.review-caption-note {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-xs);
+  color: var(--text-lo);
+}
+
+.review-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.review-title {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  color: var(--text-hi);
+}
+
+.review-fact {
+  display: flex;
+  gap: var(--space-3);
+  align-items: baseline;
+  font-size: var(--text-sm);
+  word-break: break-word;
+}
+
+/* The label sits in a column of its own so the values line up. */
+.review-fact-label {
+  flex: 0 0 132px;
+  color: var(--text-lo);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+}
+
+.review-fact-value {
+  color: var(--text);
+  min-width: 0;
+}
+
+.review-fact-good .review-fact-value {
+  color: var(--teal);
+}
+
+.review-fact-bad .review-fact-value {
+  color: var(--rose);
+}
+
+.review-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line);
+}
+
+/* Inside a block the facts stack, so the label must not keep a wide
+   basis - that is what left a 150px gap under every label. */
+.review-block .review-fact {
+  flex-direction: column;
+  gap: var(--space-1);
+  align-items: flex-start;
+}
+
+.review-block .review-fact-label {
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+.review-caption {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--surface-inset);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  line-height: var(--leading-body);
+  white-space: pre-wrap;
+}
+
+.review-hashtags {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--teal);
+}
+
+.review-checks,
+.review-problems {
+  margin: 0;
+  padding-left: var(--space-5);
+  font-size: var(--text-xs);
+  line-height: var(--leading-body);
+  color: var(--text-mid);
+}
+
+.review-checks li.ok {
+  color: var(--text-mid);
+}
+
+.review-checks li.bad {
+  color: var(--amber);
+}
+
+.review-checks .review-check-name {
+  display: inline-block;
+  min-width: 132px;
+  color: var(--text-lo);
+}
+
+.review-problems li {
+  color: var(--amber);
+}
+
+.review-connected {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--teal);
+}
+
+.review-error {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--rose);
+}
+
+.review-warn {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--amber);
+}
+
+.review-outcome {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--teal-wash);
+  border: 1px solid rgba(45, 212, 191, 0.3);
+  font-size: var(--text-sm);
+  color: var(--text);
+}
+
+.review-footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+}
+
+.review-approval {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  font-size: var(--text-sm);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.review-approval input {
+  margin-top: 2px;
+  accent-color: var(--lime);
+}
+
+.review-approval-warning span {
+  color: var(--amber);
+}
+
+.review-actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+}

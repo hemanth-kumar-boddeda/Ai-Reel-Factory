@@ -1,0 +1,161 @@
+/*
+ * Design tokens – the single source of truth.
+ *
+ * They come from DESIGN_DNA.md: a near-black graphite workspace, one
+ * electric-lime signal colour, and violet/teal as depth only.
+ *
+ * A component never uses a raw hex value. If it needs something new it adds
+ * a semantic token here first.
+ */
+
+:root {
+  /* ---------------------------------------------------------- surfaces */
+  --surface-sunken: #08090b;
+  --surface-base: #0d0f12;
+  --surface-raised: #121519;
+  --surface-overlay: #181b21;
+  --surface-hover: #232830;
+  --surface-active: #2e343e;
+  --surface-inset: #0a0b0e;
+
+  /* ------------------------------------------------------------- lines */
+  --line: rgba(255, 255, 255, 0.07);
+  --line-strong: rgba(255, 255, 255, 0.13);
+  --line-lime: rgba(198, 242, 78, 0.34);
+
+  /* ------------------------------------------------------------ colour */
+  --lime: #c6f24e;
+  --lime-strong: #d6ff62;
+  --lime-dim: #8fbf2a;
+  --lime-wash: rgba(198, 242, 78, 0.12);
+  --lime-glow: rgba(198, 242, 78, 0.2);
+
+  --violet: #8b5cf6;
+  --violet-soft: #a78bfa;
+  --violet-wash: rgba(139, 92, 246, 0.14);
+
+  --teal: #2dd4bf;
+  --teal-soft: #5eead4;
+  --teal-wash: rgba(45, 212, 191, 0.12);
+
+  --amber: #fbbf24;
+  --amber-wash: rgba(251, 191, 36, 0.12);
+  --rose: #fb7185;
+  --rose-wash: rgba(251, 113, 133, 0.12);
+  --slate: #94a3b8;
+
+  /* ------------------------------------------------------------- text */
+  --text-hi: #f2f4f7;
+  --text: #c9cfd8;
+  --text-mid: #8a93a0;
+  /* The muted colour is used for 10.5px labels, so it has to clear 4.5:1
+     against every surface it appears on. */
+  --text-lo: #7b8492;
+  --text-on-lime: #10130a;
+
+  /* -------------------------------------------------------- typography */
+  --font-sans: ui-sans-serif, 'Segoe UI Variable Text', 'Segoe UI', system-ui,
+    -apple-system, 'Helvetica Neue', sans-serif;
+  --font-display: ui-sans-serif, 'Segoe UI Variable Display', 'Segoe UI', system-ui,
+    -apple-system, 'Helvetica Neue', sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Mono', 'SF Mono', Menlo, Consolas, monospace;
+
+  --text-2xs: 11px;
+  --text-xs: 12.5px;
+  --text-sm: 13.5px;
+  --text-md: 14.5px;
+  --text-lg: 16px;
+  --text-xl: 18px;
+  --text-2xl: 22px;
+  --text-3xl: 27px;
+  --text-4xl: 34px;
+
+  --tracking-label: 0.14em;
+  --tracking-display: -0.03em;
+  --tracking-body: -0.011em;
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-body: 1.55;
+
+  /* ----------------------------------------------------------- spacing */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 48px;
+  --space-10: 64px;
+
+  /* ------------------------------------------------------------ radius */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+
+  /* --------------------------------------------------------- elevation */
+  --elev-1: inset 0 1px 0 rgba(255, 255, 255, 0.045), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --elev-2: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 8px 24px -8px rgba(0, 0, 0, 0.7);
+  --elev-3: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 24px 60px -18px rgba(0, 0, 0, 0.85);
+  --elev-lime: 0 0 0 1px var(--line-lime), 0 6px 22px -8px var(--lime-glow);
+
+  /* ------------------------------------------------------------ motion */
+  --dur-micro: 120ms;
+  --dur-element: 220ms;
+  --dur-route: 320ms;
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* ------------------------------------------------------------- layout */
+  --shell-sidebar: 248px;
+  --shell-sidebar-collapsed: 64px;
+  --shell-header: 56px;
+  --content-max: 1560px;
+
+  /* --------------------------------------------------------------- z */
+  --z-base: 1;
+  --z-sticky: 20;
+  --z-header: 40;
+  --z-dropdown: 60;
+  --z-dialog: 80;
+  --z-toast: 100;
+
+  color-scheme: dark;
+}
+
+/*
+ * The app is a dark workspace by default. A light theme is available for
+ * operators who work in a bright room; it is the same structure with the
+ * surfaces inverted, not a different design.
+ */
+[data-theme='light'] {
+  --surface-sunken: #eceef1;
+  --surface-base: #f4f5f7;
+  --surface-raised: #ffffff;
+  --surface-overlay: #ffffff;
+  --surface-hover: #e7e9ee;
+  --surface-active: #d9dde4;
+  --surface-inset: #e9ebef;
+
+  --line: rgba(9, 12, 18, 0.1);
+  --line-strong: rgba(9, 12, 18, 0.18);
+  --line-lime: rgba(120, 160, 20, 0.5);
+
+  --text-hi: #0d1017;
+  --text: #2a303a;
+  --text-mid: #5a6371;
+  --text-lo: #6b7482;
+  --text-on-lime: #10130a;
+
+  --elev-1: 0 1px 2px rgba(9, 12, 18, 0.06);
+  --elev-2: 0 8px 24px -10px rgba(9, 12, 18, 0.22);
+  --elev-3: 0 24px 60px -20px rgba(9, 12, 18, 0.3);
+
+  color-scheme: light;
+}

@@ -1,0 +1,65 @@
+/* The input. */
+
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.input-label {
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  color: var(--text-lo);
+}
+
+.input-input,
+.input-textarea {
+  width: 100%;
+  background: var(--surface-inset);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-hi);
+  font-size: var(--text-sm);
+  transition:
+    border-color var(--dur-micro) var(--ease-out),
+    box-shadow var(--dur-micro) var(--ease-out);
+}
+
+.input-input {
+  height: 32px;
+  padding: 0 var(--space-3);
+}
+
+.input-textarea {
+  padding: var(--space-2) var(--space-3);
+  resize: vertical;
+  min-height: 80px;
+  line-height: var(--leading-body);
+}
+
+.input-input:focus,
+.input-textarea:focus {
+  outline: none;
+  border-color: var(--line-lime);
+  box-shadow: 0 0 0 3px var(--lime-wash);
+}
+
+.input-input:disabled,
+.input-textarea:disabled {
+  background: var(--surface-raised);
+  color: var(--text-lo);
+  cursor: not-allowed;
+}
+
+.input-input::placeholder,
+.input-textarea::placeholder {
+  color: var(--text-lo);
+}
+
+.input-error {
+  font-size: var(--text-xs);
+  color: var(--rose);
+  font-weight: 500;
+}

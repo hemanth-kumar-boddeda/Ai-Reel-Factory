@@ -1,0 +1,183 @@
+/* The Settings page. */
+
+/*
+ * Two columns of unequal content: the short panels stack on the left and
+ * the long workspace form sits on the right.  The previous layout put the
+ * two short panels side by side and the workspace form underneath, which
+ * left more than half of the left column empty.
+ */
+.settings-grid {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
+  gap: var(--space-5);
+  align-items: start;
+}
+
+/* The stacked short panels. */
+.settings-column {
+  display: grid;
+  gap: var(--space-5);
+  align-content: start;
+}
+
+/* One column on a narrow screen: the stacked panels keep their order. */
+@media (max-width: 1024px) {
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.creator-toggles-label {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: var(--text-sm);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.creator-toggles-label input {
+  accent-color: var(--lime);
+}
+
+/* ------------------------------------------------- the workspace panel */
+.workspace-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.workspace-panel form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.panel-heading {
+  margin: 0;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  color: var(--text-lo);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-4);
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.form-field-wide {
+  grid-column: 1 / -1;
+}
+
+.form-field > span {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--text-mid);
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-inset);
+  color: var(--text-hi);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  transition:
+    border-color var(--dur-micro) var(--ease-out),
+    background-color var(--dur-micro) var(--ease-out);
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  outline: none;
+  border-color: var(--line-lime);
+  background: var(--surface-base);
+}
+
+.form-field input[type='color'] {
+  height: 36px;
+  padding: 2px;
+  cursor: pointer;
+}
+
+.form-field small {
+  font-size: var(--text-xs);
+  line-height: var(--leading-body);
+  color: var(--text-lo);
+}
+
+.form-field-check {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.form-field-check input {
+  width: auto;
+  accent-color: var(--lime);
+}
+
+.form-field-check > span {
+  font-size: var(--text-sm);
+  color: var(--text);
+}
+
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.settings-error,
+.settings-success {
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+.settings-error {
+  color: var(--rose);
+}
+
+.settings-success {
+  color: var(--teal);
+}
+
+.kv-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.kv {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--text-mid);
+}
+
+.kv strong {
+  color: var(--text-hi);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+  text-align: right;
+}

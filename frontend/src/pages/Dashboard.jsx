@@ -1,474 +1,411 @@
-import { motion, useReducedMotion } from 'framer-motion';
-import { useReel } from '../hooks/useReel';
-import MetricCard from '../components/MetricCard';
-import ReelCard from '../components/reel/ReelCard';
+import { lazy, Suspense, useMemo, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import useDashboard from '../hooks/useDashboard';
+import Button from '../components/shared/Button';
+import StatusBadge from '../components/shared/StatusBadge';
+import { usePageEntrance, useScrollReveal } from '../lib/motion';
+import './Dashboard.css';
 
+/*
+ * The hero is the only piece of the product with volume, so it is the only
+ * piece that is loaded on demand: Three.js is a large dependency and it must
+ * not be in the bundle of every route.
+ */
+const ReelLensHero = lazy(() => import('../components/hero/ReelLensHero'));
+
+const BACKEND = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+
+function Metric({ label, value, hint, tone }) {
+  return (
+    <div className={`metric-tile${tone ? ` metric-tile-${tone}` : ''}`}>
+      <span className="metric-label">{label}</span>
+      <span className="metric-value">{value}</span>
+      {hint && <span className="metric-hint">{hint}</span>}
+    </div>
+  );
+}
+
+function ProviderRow({ provider }) {
+  return (
+    <li className="provider-row">
+      <div className="grow">
+        <p className="provider-name">{provider.name || provider.provider}</p>
+        <p className="muted small">{provider.message || provider.detail}</p>
+      </div>
+      <StatusBadge
+        state={provider.status || (provider.ok ? 'ok' : 'unavailable')}
+        label={provider.status || (provider.ok ? 'Ready' : 'Unavailable')}
+      />
+    </li>
+  );
+}
+
+function JobRow({ job }) {
+  return (
+    <li className="job-row">
+      <div className="grow">
+        <p className="job-type">{job.type}</p>
+        <p className="muted small">
+          {job.reel_id ? `Reel ${job.reel_id}` : 'No reel'} · {job.progress ?? 0}%
+        </p>
+        {job.error && <p className="job-error">{job.error}</p>}
+      </div>
+      <StatusBadge state={job.status} />
+    </li>
+  );
+}
+
+/**
+ * The Overview.
+ *
+ * It shows the state of the pipeline and nothing else: what was discovered,
+ * what is ready, what failed, and whether the providers are able to work.
+ * Every number comes from the API.
+ */
 export default function Dashboard() {
-  const { reels, loading, error } = useReel();
-  // Ensure reels is an array to prevent errors if API returns null or non-array
-  const safeReels = Array.isArray(reels) ? reels : [];
-  const reducedMotion = useReducedMotion();
+  const scope = useRef(null);
+  const { data, loading, error, busy, reload, runPipeline, runDiscovery, retryJob } =
+    useDashboard();
+  const [message, setMessage] = useState(null);
+  const [actionError, setActionError] = useState(null);
 
-  // Helper function to conditionally apply motion props
-  const motionProps = (reducedMotion, props) =>
-    reducedMotion ? {} : props;
+  usePageEntrance(scope, { selector: '[data-animate]' });
+  useScrollReveal(scope);
 
-  if (loading) {
-    return (
-      <motion.div
-        {...motionProps(reducedMotion, {
-          initial: { opacity: 0 },
-          animate: { opacity: 1 },
-          transition: { duration: 0.5 }
-        })}
-      >
-        <motion.h2
-          {...motionProps(reducedMotion, {
-            initial: { opacity: 0, y: 20 },
-            animate: { opacity: 1, y: 0 },
-            transition: { duration: 0.5 }
-          })}
-        >
-          Loading your dashboard...
-        </motion.h2>
-        {/* Skeleton placeholders */}
-        <div className="dashboard-content">
-          <div className="metrics-grid">
-            {[1, 2, 3, 4].map((_, i) => (
-              <motion.div
-                key={i}
-                className="glass"
-                {...motionProps(reducedMotion, {
-                  initial: { opacity: 0, scale: 0.9 },
-                  animate: { opacity: 1, scale: 1 },
-                  transition: { duration: 0.5, delay: i * 0.1 }
-                })}
-              >
-                <div className="metric-content">
-                  <p className="metric-label">Loading...</p>
-                  <p className="metric-value">--</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-          <motion.div
-            className="recent-section"
-            {...motionProps(reducedMotion, {
-              initial: { opacity: 0, y: 20 },
-              animate: { opacity: 1, y: 0 },
-              transition: { duration: 0.5, delay: 0.5 }
-            })}
-          >
-            <motion.h3
-              {...motionProps(reducedMotion, {
-                initial: { opacity: 0, x: -20 },
-                animate: { opacity: 1, x: 0 },
-                transition: { duration: 0.5, delay: 0.7 }
-              })}
-            >
-              Recent Content
-            </motion.h3>
-            <div className="recent-grid">
-              {[1, 2, 3].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="glass"
-                  {...motionProps(reducedMotion, {
-                    initial: { opacity: 0, scale: 0.9 },
-                    animate: { opacity: 1, scale: 1 },
-                    transition: { duration: 0.5, delay: 0.8 + i * 0.1 }
-                  })}
-                >
-                  <div className="recent-item-placeholder">
-                    <h4>Loading...</h4>
-                    <p>Loading...</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </motion.div>
-    );
-  }
+  const today = useMemo(() => {
+    const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+    return (data.stories || []).filter((story) => {
+      if (!story.first_seen_at) return false;
+      return new Date(story.first_seen_at).getTime() >= cutoff;
+    });
+  }, [data.stories]);
 
-  if (error) {
-    return (
-      <motion.div
-        {...motionProps(reducedMotion, {
-          initial: { opacity: 0 },
-          animate: { opacity: 1 },
-          transition: { duration: 0.5 }
-        })}
-      >
-        <motion.h2
-          {...motionProps(reducedMotion, {
-            initial: { opacity: 0, y: 20 },
-            animate: { opacity: 1, y: 0 },
-            transition: { duration: 0.5 }
-          })}
-        >
-          We could not load your reels.
-        </motion.h2>
-        <motion.p
-          {...motionProps(reducedMotion, {
-            initial: { opacity: 0, x: 20 },
-            animate: { opacity: 1, x: 0 },
-            transition: { duration: 0.5, delay: 0.2 }
-          })}
-        >
-          Please try again later.
-        </motion.p>
-        <motion.button
-          {...motionProps(reducedMotion, {
-            initial: { opacity: 0, y: 20 },
-            animate: { opacity: 1, y: 0 },
-            transition: { duration: 0.5, delay: 0.5 }
-          })}
-          onClick={() => window.location.reload()}
-        >
-          Retry
-        </motion.button>
-      </motion.div>
-    );
-  }
+  const readyToPublish = useMemo(
+    () => (data.stories || []).filter((story) => story.status === 'READY_TO_PUBLISH'),
+    [data.stories]
+  );
+  const published = useMemo(
+    () => (data.stories || []).filter((story) => story.status === 'PUBLISHED'),
+    [data.stories]
+  );
+  const failedJobs = useMemo(
+    () => (data.jobs || []).filter((job) => job.status === 'FAILED'),
+    [data.jobs]
+  );
+  const recentReels = useMemo(
+    () => (data.stories || []).slice(0, 6),
+    [data.stories]
+  );
 
-  // Calculate metrics
-  const articlesDiscovered = safeReels.filter(r => r.status === 'DISCOVERED').length;
-  const reelsGenerated = safeReels.length;
-  const processingStatuses = [
-    'RESEARCHING',
-    'SCRIPTING',
-    'STORYBOARDING',
-    'ASSET_GENERATION',
-    'VOICE_GENERATION',
-    'RENDERING',
-    'QA'
-  ];
-  const processing = safeReels.filter(r => processingStatuses.includes(r.status)).length;
-  const readyToPublish = safeReels.filter(r => r.status === 'READY_TO_PUBLISH').length;
+  const handle = async (action, successMessage) => {
+    setActionError(null);
+    setMessage(null);
+    try {
+      await action();
+      setMessage({ tone: 'success', text: successMessage });
+    } catch (err) {
+      setActionError(
+        err?.response?.data?.detail || err?.message || 'The action did not complete.'
+      );
+    }
+  };
 
-  // Sort reels by id descending (most recent first)
-  const sortedReels = [...safeReels].sort((a, b) => b.id - a.id);
-
-  // Recent Content: discovered items (most recent first)
-  const recentContent = sortedReels.filter(r => r.status === 'DISCOVERED').slice(0, 4);
-
-  // Recent Reels: all reels (most recent first)
-  const recentReels = sortedReels.slice(0, 4);
-
-  // Pipeline Activity: reels in processing statuses (most recent first)
-  const pipelineActivity = sortedReels.filter(r => processingStatuses.includes(r.status)).slice(0, 4);
+  const overview = data.analytics?.overview || {};
 
   return (
-    <motion.div
-      className="dashboard-page"
-      {...motionProps(reducedMotion, {
-        initial: { opacity: 0, y: 30 },
-        animate: { opacity: 1, y: 0 },
-        transition: { duration: 0.6 }
-      })}
-    >
-      {/* Header */}
-      <motion.div
-        {...motionProps(reducedMotion, {
-          initial: { opacity: 0, y: 20 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.8, delay: 0.2 }
-        })}
-      >
-        <motion.h1
-          {...motionProps(reducedMotion, {
-            initial: { opacity: 0, x: -50 },
-            animate: { opacity: 1, x: 0 },
-            transition: { duration: 0.8, delay: 0.4 }
-          })}
-          className="dashboard-title"
-        >
-          <span className="title-prefix">AI </span>
-          <span className="title-suffix">Reel Factory</span>
-        </motion.h1>
-        <motion.p
-          {...motionProps(reducedMotion, {
-            initial: { opacity: 0, x: 50 },
-            animate: { opacity: 1, x: 0 },
-            transition: { duration: 0.8, delay: 0.6 }
-          })}
-          className="dashboard-subtitle"
-        >
-          Turn stories and ideas into publish-ready short-form videos.
-        </motion.p>
-        <motion.div
-          className="dashboard-cta"
-          {...motionProps(reducedMotion, {
-            initial: { opacity: 0, scale: 0.9 },
-            animate: { opacity: 1, scale: 1 },
-            transition: { duration: 0.5, delay: 1.0 }
-          })}
-        >
-          <a href="/create" className="btn btn-primary">
-            Create Reel
-          </a>
-        </motion.div>
-      </motion.div>
-
-      {/* Metrics Grid */}
-      <motion.div
-        className="metrics-grid"
-        {...motionProps(reducedMotion, {
-          initial: { opacity: 0, y: 30 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.6, delay: 0.6 }
-        })}
-      >
-        <MetricCard
-          label="Articles Discovered"
-          value={articlesDiscovered}
-          accent="#4ecdc4"
-          reducedMotion={reducedMotion}
-        />
-        <MetricCard
-          label="Reels Generated"
-          value={reelsGenerated}
-          accent="#ff6b6b"
-          reducedMotion={reducedMotion}
-        />
-        <MetricCard
-          label="Processing"
-          value={processing}
-          accent="#ffe66d"
-          reducedMotion={reducedMotion}
-        />
-        <MetricCard
-          label="Ready to Publish"
-          value={readyToPublish}
-          accent="#95e1d3"
-          reducedMotion={reducedMotion}
-        />
-      </motion.div>
-
-      {/* Recent Content Section */}
-      {recentContent.length > 0 ? (
-        <motion.div
-          className="recent-section"
-          {...motionProps(reducedMotion, {
-            initial: { opacity: 0, y: 30 },
-            animate: { opacity: 1, y: 0 },
-            transition: { duration: 0.6, delay: 0.8 }
-          })}
-        >
-          <motion.h2
-            {...motionProps(reducedMotion, {
-              initial: { opacity: 0, x: -30 },
-              animate: { opacity: 1, x: 0 },
-              transition: { duration: 0.6, delay: 1.0 }
-            })}
-            className="section-title"
-          >
-            Recent Content
-          </motion.h2>
-          <div className="recent-grid">
-            {recentContent.map((reel) => (
-              <motion.div
-                key={reel.id}
-                className="glass"
-                {...motionProps(reducedMotion, {
-                  initial: { opacity: 0, scale: 0.9 },
-                  animate: { opacity: 1, scale: 1 },
-                  transition: { duration: 0.5, delay: reel.id * 0.01 }
-                })}
-                >
-                <ReelCard reel={reel} />
-              </motion.div>
-            ))}
+    <div className="page stack" ref={scope}>
+      <section className="hero" data-animate>
+        <div className="hero-body">
+          <p className="hero-eyebrow">The factory</p>
+          <h2 className="hero-title">
+            Research in. Vertical video out. A human says yes.
+          </h2>
+          <p className="hero-copy">
+            The pipeline discovers a story, checks the source, writes the script,
+            renders the Reel and hands it to you. Nothing reaches Instagram
+            without your approval.
+          </p>
+          <div className="hero-actions">
+            <Button
+              variant="primary"
+              disabled={busy}
+              onClick={() =>
+                handle(
+                  () => runPipeline({ publish: false, dryRun: true }),
+                  'The dry run finished. Nothing was published.'
+                )
+              }
+            >
+              Run a dry run
+            </Button>
+            <Button
+              variant="outline"
+              disabled={busy}
+              onClick={() =>
+                handle(() => runDiscovery(), 'Discovery finished.')
+              }
+            >
+              Fetch the latest stories
+            </Button>
           </div>
-        </motion.div>
-      ) : (
-        <motion.div
-          className="empty-state"
-          {...motionProps(reducedMotion, {
-            initial: { opacity: 0, y: 30 },
-            animate: { opacity: 1, y: 0 },
-            transition: { duration: 0.6, delay: 0.8 }
-          })}
+        </div>
+        <Suspense
+          fallback={<div className="hero-canvas hero-canvas-loading" aria-hidden="true" />}
         >
-          <motion.h2
-            {...motionProps(reducedMotion, {
-              initial: { opacity: 0, x: -20 },
-              animate: { opacity: 1, x: 0 },
-              transition: { duration: 0.6, delay: 1.0 }
-            })}
-          >
-            No recent content
-          </motion.h2>
-          <motion.p
-            {...motionProps(reducedMotion, {
-              initial: { opacity: 0, x: 20 },
-              animate: { opacity: 1, x: 0 },
-              transition: { duration: 0.6, delay: 1.2 }
-            })}
-          >
-            Discover a story or create your first reel to see content here.
-          </motion.p>
-          <motion.a
-            href="/create"
-            className="btn btn-secondary"
-            {...motionProps(reducedMotion, {
-              initial: { opacity: 0, y: 20 },
-              animate: { opacity: 1, y: 0 },
-              transition: { duration: 0.5, delay: 1.4 }
-            })}
-          >
-            Create Reel
-          </motion.a>
-        </motion.div>
+          <ReelLensHero />
+        </Suspense>
+      </section>
+
+      {(message || error || actionError) && (
+        <div data-animate>
+          {message && (
+            <p className="notice notice-success" role="status">
+              {message.text}
+            </p>
+          )}
+          {error && (
+            <p className="notice notice-warn" role="status">
+              {error}
+            </p>
+          )}
+          {actionError && (
+            <p className="notice notice-error" role="alert">
+              {actionError}
+            </p>
+          )}
+        </div>
       )}
 
-      {/* Recent Reels Section */}
-      {recentReels.length > 0 ? (
-        <motion.div
-          className="recent-section"
-          {...motionProps(reducedMotion, {
-            initial: { opacity: 0, y: 30 },
-            animate: { opacity: 1, y: 0 },
-            transition: { duration: 0.6, delay: 1.2 }
-          })}
-        >
-          <motion.h2
-            {...motionProps(reducedMotion, {
-              initial: { opacity: 0, x: -30 },
-              animate: { opacity: 1, x: 0 },
-              transition: { duration: 0.6, delay: 1.4 }
-            })}
-          >
-            Recent Reels
-          </motion.h2>
-          <div className="recent-grid">
-            {recentReels.map((reel) => (
-              <motion.div
-                key={reel.id}
-                className="glass"
-                {...motionProps(reducedMotion, {
-                  initial: { opacity: 0, scale: 0.9 },
-                  animate: { opacity: 1, scale: 1 },
-                  transition: { duration: 0.5, delay: reel.id * 0.01 }
-                })}
-                >
-                <ReelCard reel={reel} />
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      ) : (
-        <motion.div
-          className="empty-state"
-          {...motionProps(reducedMotion, {
-            initial: { opacity: 0, y: 30 },
-            animate: { opacity: 1, y: 0 },
-            transition: { duration: 0.6, delay: 1.2 }
-          })}
-        >
-          <motion.h2
-            {...motionProps(reducedMotion, {
-              initial: { opacity: 0, x: -20 },
-              animate: { opacity: 1, x: 0 },
-              transition: { duration: 0.6, delay: 1.4 }
-            })}
-          >
-            No reels yet
-          </motion.h2>
-          <motion.p
-            {...motionProps(reducedMotion, {
-              initial: { opacity: 0, x: 20 },
-              animate: { opacity: 1, x: 0 },
-              transition: { duration: 0.6, delay: 1.6 }
-            })}
-          >
-            Create your first reel to see it here.
-          </motion.p>
-          <motion.a
-            href="/create"
-            className="btn btn-secondary"
-            {...motionProps(reducedMotion, {
-              initial: { opacity: 0, y: 20 },
-              animate: { opacity: 1, y: 0 },
-              transition: { duration: 0.5, delay: 1.8 }
-            })}
-          >
-            Create Reel
-          </motion.a>
-        </motion.div>
-      )}
+      <section className="metric-row" data-animate>
+        <Metric label="Stories today" value={today.length} hint="discovered in the last 24h" />
+        <Metric
+          label="Ready to publish"
+          value={readyToPublish.length}
+          hint="passed quality control"
+          tone={readyToPublish.length ? 'signal' : undefined}
+        />
+        <Metric
+          label="Published"
+          value={published.length}
+          hint="confirmed by Instagram"
+        />
+        <Metric
+          label="Failed jobs"
+          value={failedJobs.length}
+          hint="need attention"
+          tone={failedJobs.length ? 'alert' : undefined}
+        />
+        <Metric
+          label="Average reach"
+          value={overview.average_reach ?? '–'}
+          hint="across the published Reels"
+        />
+        <Metric
+          label="Engagement rate"
+          value={overview.engagement_rate ?? '–'}
+          hint="when the denominator is known"
+        />
+      </section>
 
-      {/* Pipeline Activity Section */}
-      {pipelineActivity.length > 0 ? (
-        <motion.div
-          className="recent-section"
-          {...motionProps(reducedMotion, {
-            initial: { opacity: 0, y: 30 },
-            animate: { opacity: 1, y: 0 },
-            transition: { duration: 0.6, delay: 1.6 }
-          })}
-        >
-          <motion.h2
-            {...motionProps(reducedMotion, {
-              initial: { opacity: 0, x: -30 },
-              animate: { opacity: 1, x: 0 },
-              transition: { duration: 0.6, delay: 1.8 }
-            })}
-          >
-            Pipeline Activity
-          </motion.h2>
-          <div className="pipeline-grid">
-            {pipelineActivity.map((reel) => (
-              <motion.div
-                key={reel.id}
-                className="glass"
-                {...motionProps(reducedMotion, {
-                  initial: { opacity: 0, scale: 0.9 },
-                  animate: { opacity: 1, scale: 1 },
-                  transition: { duration: 0.5, delay: reel.id * 0.01 }
-                })}
-                >
-                <div className="pipeline-item">
-                  <ReelCard reel={reel} />
-                  <div className="pipeline-status">
-                    <span className="status-badge">{reel.status}</span>
+      <div className="dashboard-grid">
+        <section className="panel" data-animate>
+          <header className="panel-header">
+            <h3 className="panel-title">Recent research</h3>
+            <Link className="panel-link" to="/discover">
+              All stories
+            </Link>
+          </header>
+          <div className="panel-body">
+            {loading && (data.stories || []).length === 0 ? (
+              <p className="muted small">Loading the stories…</p>
+            ) : recentReels.length === 0 ? (
+              <div className="empty-state">
+                <p className="empty-state-title">No stories yet</p>
+                <p className="empty-state-body">
+                  Run discovery and the factory pulls the latest AI news into
+                  the queue.
+                </p>
+              </div>
+            ) : (
+              <ul className="story-list">
+                {recentReels.map((story) => (
+                  <li key={story.id} className="story-row" data-reveal>
+                    <div className="grow">
+                      <p className="story-title truncate">{story.title}</p>
+                      <p className="muted small">
+                        {story.publisher || story.source}
+                        {story.score != null ? ` · score ${story.score}` : ''}
+                      </p>
+                    </div>
+                    <StatusBadge state={story.status} />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
+
+        <section className="panel" data-animate>
+          <header className="panel-header">
+            <h3 className="panel-title">Provider readiness</h3>
+          </header>
+          <div className="panel-body">
+            {(data.providers || []).length === 0 ? (
+              <div className="empty-state">
+                <p className="empty-state-title">No provider report</p>
+                <p className="empty-state-body">
+                  The provider health endpoint did not answer.
+                </p>
+              </div>
+            ) : (
+              <ul className="provider-list">
+                {data.providers.map((provider, index) => (
+                  <ProviderRow
+                    key={`${provider.name || provider.provider}-${provider.capability || ''}-${index}`}
+                    provider={provider}
+                  />
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
+
+        <section className="panel" data-animate>
+          <header className="panel-header">
+            <h3 className="panel-title">Pending approvals</h3>
+            <Link className="panel-link" to="/publishing">
+              Publishing
+            </Link>
+          </header>
+          <div className="panel-body">
+            {readyToPublish.length === 0 ? (
+              <div className="empty-state">
+                <p className="empty-state-title">Nothing is waiting</p>
+                <p className="empty-state-body">
+                  A Reel appears here after it has been rendered and has passed
+                  quality control.
+                </p>
+              </div>
+            ) : (
+              <ul className="story-list">
+                {readyToPublish.map((story) => (
+                  <li key={story.id} className="story-row" data-reveal>
+                    <div className="grow">
+                      <p className="story-title truncate">{story.title}</p>
+                      <p className="muted small">
+                        QA {story.qa_score != null ? Number(story.qa_score).toFixed(0) : '–'}
+                        {story.content_origin
+                          ? ` · ${String(story.content_origin).replace(/_/g, ' ')}`
+                          : ''}
+                      </p>
+                    </div>
+                    <Link className="btn btn-sm" to="/publishing">
+                      Review
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
+
+        <section className="panel" data-animate>
+          <header className="panel-header">
+            <h3 className="panel-title">Recent jobs</h3>
+            <Link className="panel-link" to="/jobs">
+              All jobs
+            </Link>
+          </header>
+          <div className="panel-body">
+            {(data.jobs || []).length === 0 ? (
+              <div className="empty-state">
+                <p className="empty-state-title">No jobs have run</p>
+                <p className="empty-state-body">
+                  A job appears here the moment the factory is asked to do
+                  something.
+                </p>
+              </div>
+            ) : (
+              <ul className="job-list">
+                {data.jobs.slice(0, 6).map((job) => (
+                  <JobRow key={job.id} job={job} />
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
+      </div>
+
+      {failedJobs.length > 0 && (
+        <section className="panel" data-animate>
+          <header className="panel-header">
+            <h3 className="panel-title">Failed jobs</h3>
+          </header>
+          <div className="panel-body">
+            <ul className="job-list">
+              {failedJobs.map((job) => (
+                <li key={job.id} className="job-row">
+                  <div className="grow">
+                    <p className="job-type">{job.type}</p>
+                    <p className="job-error">{job.error}</p>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                  <Button
+                    variant="outline"
+                    size="small"
+                    disabled={busy}
+                    onClick={() =>
+                      handle(
+                        () => retryJob(job.id),
+                        'The job was queued again.'
+                      )
+                    }
+                  >
+                    Retry
+                  </Button>
+                </li>
+              ))}
+            </ul>
           </div>
-        </motion.div>
-      ) : (
-        <motion.div
-          className="empty-state"
-          {...motionProps(reducedMotion, {
-            initial: { opacity: 0, y: 30 },
-            animate: { opacity: 1, y: 0 },
-            transition: { duration: 0.6, delay: 1.6 }
-          })}
-        >
-          <motion.h2
-            {...motionProps(reducedMotion, {
-              initial: { opacity: 0, x: -20 },
-              animate: { opacity: 1, x: 0 },
-              transition: { duration: 0.6, delay: 1.8 }
-            })}
-          >
-            No activity in pipeline
-          </motion.h2>
-          <motion.p
-            {...motionProps(reducedMotion, {
-              initial: { opacity: 0, x: 20 },
-              animate: { opacity: 1, x: 0 },
-              transition: { duration: 0.6, delay: 2.0 }
-            })}
-          >
-            All reels are either queued or completed.
-          </motion.p>
-        </motion.div>
+        </section>
       )}
-    </motion.div>
+
+      <section className="panel" data-animate>
+        <header className="panel-header">
+          <h3 className="panel-title">What the data says</h3>
+          <Link className="panel-link" to="/analytics">
+            Analytics
+          </Link>
+        </header>
+        <div className="panel-body">
+          {!data.recommendations ? (
+            <p className="muted small">
+              The recommendation engine has not answered yet.
+            </p>
+          ) : data.recommendations.status === 'insufficient_data' ? (
+            <p className="muted small">
+              {data.recommendations.message ||
+                'Not enough published Reels yet for a reliable recommendation.'}
+            </p>
+          ) : (
+            <div className="kv-list">
+              {Object.entries(data.recommendations.recommendations || {}).map(
+                ([key, value]) => (
+                  <div className="kv" key={key}>
+                    <span>{key.replace(/_/g, ' ')}</span>
+                    <strong>
+                      {value.recommended || value.recommended_bucket}
+                    </strong>
+                  </div>
+                )
+              )}
+              <p className="muted small">
+                Based on {data.recommendations.samples} published Reel(s) with
+                metrics.
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
+    </div>
   );
 }
