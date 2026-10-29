@@ -1029,6 +1029,16 @@ def analytics_recommendations(current_user=Depends(get_current_active_user)):
 def pipeline_status(current_user=Depends(get_current_active_user)):
     return {"status": "idle", "last_run": None}
 
+@app.post("/api/pipeline/run")
+def api_pipeline_run(publish: bool = False, dry_run: bool = True, current_user=Depends(get_current_active_user), service: ReelService = Depends(get_reel_service)):
+    try:
+        reel_id = service.process_pipeline(user_id=current_user.id)
+        if reel_id:
+            return {"status": "pipeline completed", "reel_id": reel_id}
+        return {"status": "pipeline did not process any item"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/api/instagram/connection")
 def instagram_connection(current_user=Depends(get_current_active_user), service: InstagramService = Depends(get_instagram_service)):
     conn = service.get_active_connection(current_user.id)

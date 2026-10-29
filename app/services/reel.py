@@ -164,8 +164,15 @@ class ReelService:
         if result.returncode != 0:
             raise Exception(f"FFmpeg failed: {result.stderr}")
 
-    def process_pipeline(self, user_id: int, background_tasks: BackgroundTasks = None) -> Optional[int]:
+    def process_pipeline(self, user_id: int = None, background_tasks: BackgroundTasks = None) -> Optional[int]:
         """Main pipeline processing function (global, processes highest-scoring discovered reel)"""
+        if user_id is None:
+            # Fall back to first user in DB
+            from app.models.user import UserItem
+            u = self.db.query(UserItem).first()
+            user_id = u.id if u else None
+            if user_id is None:
+                return None
         # Ensure tables exist
         from app.database import Base, engine
         Base.metadata.create_all(bind=engine)
