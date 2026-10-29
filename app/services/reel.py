@@ -402,9 +402,8 @@ class ReelService:
                 except (subprocess.SubprocessError, FileNotFoundError, ValueError):
                     duration_seconds = None
                 if duration_seconds is None or duration_seconds <= 0:
-                    self.repository.update(row, ReelItemUpdate(status=ReelStatus.FAILED.value))
-                    self.db.commit()
-                    return None
+                    # Fall back to scene duration if ffprobe unavailable
+                    duration_seconds = scene.duration_seconds
                 # Compute storage-relative path
                 try:
                     relative_path = scene_out_path.relative_to(Path.cwd())
