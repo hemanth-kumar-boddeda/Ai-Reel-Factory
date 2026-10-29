@@ -995,3 +995,40 @@ def get_reel_analytics_history(reel_id: int, current_user: UserItem = Depends(ge
         }
         for analytics in analytics_list
     ]
+# --- Dashboard / observability stubs (keep UI from showing "data could not be loaded") ---
+@app.get("/api/stories")
+def list_stories(limit: int = 25, current_user=Depends(get_current_active_user)):
+    return []
+
+@app.get("/api/jobs")
+def list_jobs(limit: int = 25, reel_id: Optional[int] = None, current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
+    from app.repositories.job import JobRepository
+    repo = JobRepository(db)
+    if reel_id is not None:
+        return repo.get_by_reel_id_and_user(reel_id, current_user.id)[:limit]
+    return repo.get_by_user(current_user.id, limit=limit)
+
+@app.get("/api/failures")
+def list_failures(limit: int = 15, current_user=Depends(get_current_active_user)):
+    return []
+
+@app.get("/api/providers/health")
+def providers_health(current_user=Depends(get_current_active_user)):
+    return {"providers": []}
+
+@app.get("/api/analytics/insights")
+def analytics_insights(current_user=Depends(get_current_active_user)):
+    return {"overview": {}, "reels": []}
+
+@app.get("/api/analytics/recommendations")
+def analytics_recommendations(current_user=Depends(get_current_active_user)):
+    return {}
+
+@app.get("/api/pipeline/status")
+def pipeline_status(current_user=Depends(get_current_active_user)):
+    return {"status": "idle", "last_run": None}
+
+@app.get("/api/instagram/connection")
+def instagram_connection(current_user=Depends(get_current_active_user)):
+    return None
+
