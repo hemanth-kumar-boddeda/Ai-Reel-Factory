@@ -379,10 +379,11 @@ class ReelService:
                     if loop:
                         loop.close()
                 if not success or not scene_out_path.exists() or scene_out_path.stat().st_size == 0:
+                    print(f"VISUAL FAIL: success={success} exists={scene_out_path.exists()} size={scene_out_path.stat().st_size if scene_out_path.exists() else 'NA'}")
                     self.repository.update(row, ReelItemUpdate(status=ReelStatus.FAILED.value))
                     self.db.commit()
                     return None
-                # Measure duration using ffprobe
+                print(f"VISUAL ASSET SUCCESS FOR SCENE {scene.scene_number}")
                 try:
                     result = subprocess.run(
                         ['ffprobe', '-v', 'error', '-show_entries', 'format=duration',
@@ -406,13 +407,21 @@ class ReelService:
                     duration_seconds = scene.duration_seconds
                 # Compute storage-relative path
                 try:
-                    relative_path = scene_out_path.relative_to(Path.cwd())
+                    relative_path = scene_out_path.resolve().relative_to(Path.cwd().resolve())
                     relative_path_str = str(relative_path)
                 except ValueError:
                     # If not relative to cwd, we cannot use as storage-relative path
                     self.repository.update(row, ReelItemUpdate(status=ReelStatus.FAILED.value))
                     self.db.commit()
                     return None
+                visual_assets.append({
+                    "absolute_path": scene_out_path,
+                    "relative_path": relative_path_str,
+                    "duration": duration_seconds,
+                    "scene_number": scene.scene_number,
+                    "identity_asset_id": identity_asset.id if (identity_asset is not None and use_identity) else None,
+                    "source": "identity_generation" if use_identity else "ordinary"
+                })
                         # Prepare assets data JSON
             assets_data_json = json.dumps({
                 "visual_assets": [
@@ -487,14 +496,12 @@ class ReelService:
                 duration_seconds = None
 
             if duration_seconds is None or duration_seconds <= 0:
-                # If duration cannot be measured or is invalid, mark as failed
-                self.repository.update(row, ReelItemUpdate(status=ReelStatus.FAILED.value))
-                self.db.commit()
-                return None
+                # Fall back to script duration if ffprobe unavailable
+                duration_seconds = structured_script.estimated_duration_seconds or 15
 
             # Compute storage-relative path (relative to current working directory)
             try:
-                relative_path = audio_out_path.relative_to(Path.cwd())
+                relative_path = audio_out_path.resolve().relative_to(Path.cwd().resolve())
                 audio_path_str = str(relative_path)
             except ValueError:
                 # If not relative to cwd, we cannot use as storage-relative path
@@ -1031,6 +1038,7 @@ class ReelService:
                     self.db.commit()
                     return None
                 print(f"VISUAL ASSET SUCCESS FOR SCENE {scene.scene_number}")
+                print("PROCEEDING TO AUDIO GENERATION")
                 # Measure duration using ffprobe
                 try:
                     result = subprocess.run(
