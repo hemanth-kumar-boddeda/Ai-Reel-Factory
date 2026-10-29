@@ -38,7 +38,7 @@ class MockAudioProvider(BaseAudioProvider):
 
         # Create a silent audio file (1 second of silence at 44100 Hz, 16-bit mono)
         sample_rate = 44100
-        duration_seconds = 1.0  # Default duration
+        duration_seconds = 15.0  # Default duration
         num_channels = 1
         bits_per_sample = 16
         num_samples = int(sample_rate * duration_seconds)

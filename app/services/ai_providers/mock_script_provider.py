@@ -51,7 +51,7 @@ class MockScriptProvider(BaseScriptProvider):
             # Create a mock scene
             scene = Scene(
                 scene_number=1,
-                duration_seconds=5,
+                duration_seconds=15,
                 narration="Mock scene narration",
                 visual_prompt="Mock visual prompt",
                 on_screen_text="Mock on screen text",
@@ -94,7 +94,7 @@ class MockScriptProvider(BaseScriptProvider):
 
             scene = Scene(
                 scene_number=1,
-                duration_seconds=5,
+                duration_seconds=15,
                 narration="Mock scene narration",
                 visual_prompt="Mock visual prompt",
                 on_screen_text="Mock on screen text",
