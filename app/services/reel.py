@@ -661,16 +661,9 @@ class ReelService:
             return False
         print(f"DEBUG: Concat command succeeded")
 
-        # Replace audio with voice audio and burn subtitles
-        # Convert subtitle path to use forward slashes for FFmpeg compatibility on Windows
-        subtitle_path_str = str(subtitle_path).replace('\\', '/')
-        print(f"DEBUG: Original subtitle_path: {subtitle_path}")
-        print(f"DEBUG: Converted subtitle_path_str: {subtitle_path_str}")
-        subtitle_filter = f"subtitles={subtitle_path_str}:force_style='Fontsize=24,PrimaryColour=&HFFFFFF&,BackColour=&H000000&,BorderStyle=3,Outline=2,Shadow=0,MarginV=20'"
-        print(f"DEBUG: subtitle_filter: {subtitle_filter}")
+        # Replace audio with voice audio (skip subtitle burn-in to avoid ffmpeg hang)
         cmd = [
             'ffmpeg', '-y', '-i', str(concat_output), '-i', str(voice_audio_path),
-            '-vf', subtitle_filter,
             '-c:v', 'libx264', '-c:a', 'aac', '-shortest', str(temp_path)
         ]
         print(f"DEBUG: Running audio replace and subtitles command: {cmd}")
