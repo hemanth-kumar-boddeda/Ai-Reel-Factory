@@ -41,18 +41,25 @@ class ReelService:
         self.review_repository = ReviewRepository(db)
         self.db = db
 
-        # Initialize AI providers
+        # Initialize AI providers individually based on availability (not all-or-nothing MOCK_MODE)
         print(f"ReelService.__init__: settings.MOCK_MODE = {settings.MOCK_MODE}")
-        if settings.MOCK_MODE:
+        # Script provider
+        if settings.MOCK_MODE or not settings.OPENAI_API_KEY:
             from .ai_providers.mock_script_provider import MockScriptProvider
-            from .ai_providers.mock_audio_provider import MockAudioProvider
-            from .ai_providers.mock_video_provider import MockVideoProvider
             script_provider = MockScriptProvider()
-            audio_provider = MockAudioProvider()
-            video_provider = MockVideoProvider()
         else:
             script_provider = OpenAIScriptProvider()
+        # Audio provider
+        if settings.MOCK_MODE or not settings.ELEVENLABS_API_KEY:
+            from .ai_providers.mock_audio_provider import MockAudioProvider
+            audio_provider = MockAudioProvider()
+        else:
             audio_provider = ElevenLabsProvider()
+        # Video provider
+        if settings.MOCK_MODE or not settings.PIKA_LABS_API_KEY:
+            from .ai_providers.mock_video_provider import MockVideoProvider
+            video_provider = MockVideoProvider()
+        else:
             video_provider = PikaLabsProvider()
         print(f"ReelService.__init__: script_provider = {script_provider}")
         self.ai_orchestrator = AIOrchestrator(
