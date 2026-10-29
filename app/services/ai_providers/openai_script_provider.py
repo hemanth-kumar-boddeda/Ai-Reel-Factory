@@ -14,7 +14,7 @@ class OpenAIScriptProvider(BaseScriptProvider):
     def __init__(self, api_key: Optional[str] = None):
         super().__init__(api_key)
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
-        self.client = AsyncOpenAI(api_key=self.api_key) if self.api_key else None
+        self.client = AsyncOpenAI(api_key=self.api_key, timeout=30.0) if self.api_key else None
 
     async def is_available(self) -> bool:
         """Check if OpenAI provider is configured (API key set)."""
@@ -37,13 +37,14 @@ class OpenAIScriptProvider(BaseScriptProvider):
         Returns:
             Generated structured script or None if generation failed
         """
-        if not self.is_available():
+        if not await self.is_available():
             return None
 
         # Construct the full prompt
         full_prompt = prompt
         if context:
             full_prompt = f"{prompt}\n\nContext: {context}"
+        full_prompt += "\n\nRespond with a JSON object with these fields: hook, title, narration, scenes (array of objects with scene_number, duration_seconds, narration, visual_prompt, on_screen_text, transition, requires_identity), cta, estimated_duration_seconds."
 
         # Define the JSON schema for structured output
         schema = {
@@ -76,13 +77,13 @@ class OpenAIScriptProvider(BaseScriptProvider):
 
         try:
             response = await self.client.chat.completions.create(
-                model="gpt-3.5-turbo-1106",  # model that supports JSON mode
+                model="gpt-4o-mini",
                 messages=[
                     {"role": "system", "content": "You are a helpful assistant that generates structured scripts for video reels. Output must be valid JSON matching the given schema. For each scene, set 'requires_identity' to true if the scene features the presenter or requires identity consistency, otherwise false."},
                     {"role": "user", "content": full_prompt}
                 ],
-                response_format={"type": "json_object", "json_schema": {"name": "script_schema", "schema": schema}},
-                max_tokens=max_length // 4,  # rough estimate: 4 chars per token
+                response_format={"type": "json_object"},
+                max_tokens=max_length // 4,
                 temperature=0.7
             )
             json_str = response.choices[0].message.content.strip()
