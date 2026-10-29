@@ -998,8 +998,9 @@ def get_reel_analytics_history(reel_id: int, current_user: UserItem = Depends(ge
     ]
 # --- Dashboard / observability stubs (keep UI from showing "data could not be loaded") ---
 @app.get("/api/stories")
-def list_stories(limit: int = 25, current_user=Depends(get_current_active_user)):
-    return []
+def list_stories(limit: int = 25, current_user=Depends(get_current_active_user), service: ReelService = Depends(get_reel_service)):
+    reels = service.get_reels(skip=0, limit=limit, user_id=current_user.id)
+    return [{"id": r.id, "title": r.title, "status": r.status, "score": r.score, "source": r.source} for r in reels]
 
 @app.get("/api/jobs")
 def list_jobs(limit: int = 25, reel_id: Optional[int] = None, current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
@@ -1010,24 +1011,32 @@ def list_jobs(limit: int = 25, reel_id: Optional[int] = None, current_user=Depen
     return repo.get_by_user(current_user.id, limit=limit)
 
 @app.get("/api/failures")
-def list_failures(limit: int = 15, current_user=Depends(get_current_active_user)):
-    return []
+def list_failures(limit: int = 15, current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
+    from app.repositories.job import JobRepository
+    repo = JobRepository(db)
+    jobs = repo.get_by_user(current_user.id, limit=100)
+    failed = [j for j in jobs if j.status == "FAILED"][:limit]
+    return [{"id": j.id, "reel_id": j.reel_id, "type": j.type, "error": j.error} for j in failed]
 
 @app.get("/api/providers/health")
 def providers_health(current_user=Depends(get_current_active_user)):
     return {"providers": []}
 
 @app.get("/api/analytics/insights")
-def analytics_insights(current_user=Depends(get_current_active_user)):
-    return {"overview": {}, "reels": []}
+def analytics_insights(current_user=Depends(get_current_active_user), service: ReelService = Depends(get_reel_service)):
+    reels = service.get_reels(skip=0, limit=1000, user_id=current_user.id)
+    from collections import Counter
+    counts = Counter(r.status for r in reels)
+    return {"overview": {"total": len(reels), "by_status": dict(counts)}, "reels": [{"id": r.id, "title": r.title, "status": r.status} for r in reels]}
 
 @app.get("/api/analytics/recommendations")
 def analytics_recommendations(current_user=Depends(get_current_active_user)):
     return {}
 
 @app.get("/api/pipeline/status")
-def pipeline_status(current_user=Depends(get_current_active_user)):
-    return {"status": "idle", "last_run": None}
+def pipeline_status(current_user=Depends(get_current_active_user), service: ReelService = Depends(get_reel_service)):
+    reels = service.get_reels(skip=0, limit=1000, user_id=current_user.id)
+    return {"status": "idle", "total_reels": len(reels), "last_run": None}
 
 @app.post("/api/pipeline/run")
 def api_pipeline_run(publish: bool = False, dry_run: bool = True, current_user=Depends(get_current_active_user), service: ReelService = Depends(get_reel_service)):
