@@ -1030,8 +1030,35 @@ def pipeline_status(current_user=Depends(get_current_active_user)):
     return {"status": "idle", "last_run": None}
 
 @app.get("/api/instagram/connection")
-def instagram_connection(current_user=Depends(get_current_active_user)):
-    return None
+def instagram_connection(current_user=Depends(get_current_active_user), service: InstagramService = Depends(get_instagram_service)):
+    conn = service.get_active_connection(current_user.id)
+    if not conn:
+        return {"connected": False, "account": None}
+    return {
+        "connected": True,
+        "account": {
+            "instagram_account_id": conn.instagram_account_id,
+            "account_username": conn.account_username,
+            "account_name": conn.account_name,
+        },
+    }
+
+@app.post("/api/instagram/connect")
+def api_connect_instagram(current_user=Depends(get_current_active_user), service: InstagramService = Depends(get_instagram_service)):
+    return connect_instagram(current_user, service)
+
+@app.post("/api/instagram/disconnect")
+def api_disconnect_instagram(current_user=Depends(get_current_active_user), service: InstagramService = Depends(get_instagram_service)):
+    # reuse existing disconnect if present
+    try:
+        return disconnect_instagram(current_user, service)
+    except NameError:
+        # fallback
+        conn = service.get_active_connection(current_user.id)
+        if conn:
+            conn.status = "INACTIVE"
+            service.db.commit()
+        return {"message": "Disconnected"}
 
 # --- Creator Studio ---
 import os as _os
@@ -1150,6 +1177,24 @@ def creator_upload(
             db2.close()
 
     threading.Thread(target=process, args=(job.id, str(vpath)), daemon=True).start()
+# --- /api aliases for Instagram publishing (new UI uses /api prefix) ---
+@app.get("/api/reels/{reel_id}/publish-readiness")
+def publish_readiness(reel_id: int, current_user=Depends(get_current_active_user), service: InstagramService = Depends(get_instagram_service)):
+    ok, reason = service.can_publish(reel_id, current_user.id)
+    return {"ready": ok, "reason": reason}
+
+@app.post("/api/reels/{reel_id}/publish")
+def api_publish_reel(reel_id: int, current_user=Depends(get_current_active_user), service: InstagramService = Depends(get_instagram_service)):
+    return publish_reel(reel_id, current_user, service)
+
+@app.post("/api/reels/{reel_id}/publish/retry")
+def api_retry_publish(reel_id: int, current_user=Depends(get_current_active_user), service: InstagramService = Depends(get_instagram_service)):
+    return retry_publish(reel_id, current_user, service)
+
+@app.get("/api/reels/{reel_id}/publications")
+def api_publications(reel_id: int, current_user=Depends(get_current_active_user), service: InstagramService = Depends(get_instagram_service)):
+    return service.get_publishing_history(reel_id, current_user.id) if hasattr(service, "get_publishing_history") else []
+
 
     return {"job_id": job.id, "message": "Upload accepted"}
 
