@@ -9,13 +9,15 @@ try:
 except Exception:
     openai = None
 
+from app.core.config import settings
+
 
 def extract_audio(video_path: str, audio_path: str) -> bool:
-    ffmpeg = os.getenv("FFMPEG_PATH", "ffmpeg")
+    ffmpeg = os.getenv("FFMPEG_PATH", "ffmpeg") or settings.FFMPEG_PATH
     try:
         subprocess.run(
             [ffmpeg, "-y", "-i", video_path, "-vn", "-acodec", "pcm_s16le", "-ar", "16000", "-ac", "1", audio_path],
-            check=True, capture_output=True,
+            check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
         )
         return True
     except Exception:
@@ -23,7 +25,7 @@ def extract_audio(video_path: str, audio_path: str) -> bool:
 
 
 def transcribe(audio_path: str) -> str:
-    api_key = os.getenv("OPENAI_API_KEY", "")
+    api_key = settings.OPENAI_API_KEY or os.getenv("OPENAI_API_KEY", "")
     if api_key and openai is not None:
         try:
             client = openai.OpenAI(api_key=api_key)

@@ -663,7 +663,7 @@ class ReelService:
             '-c', 'copy', str(concat_output)
         ]
         print(f"DEBUG: Running concat command: {concat_cmd}")
-        result = subprocess.run(concat_cmd, capture_output=True, text=True)
+        result = subprocess.run(concat_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         print(f"DEBUG: Concat command result: returncode={result.returncode}")
         if result.returncode != 0:
             print(f"FFmpeg concat failed: {result.stderr}")
@@ -676,7 +676,7 @@ class ReelService:
             '-c:v', 'libx264', '-c:a', 'aac', '-shortest', str(temp_path)
         ]
         print(f"DEBUG: Running audio replace and subtitles command: {cmd}")
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        result = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         print(f"DEBUG: Audio replace and subtitles command result: returncode={result.returncode}")
         if result.returncode != 0:
             print(f"FFmpeg audio replace and subtitles failed: {result.stderr}")
