@@ -509,7 +509,7 @@ class ReelService:
                 self.db.commit()
                 return None
             # Generate SRT captions from narration
-            srt_output_path = Path('./data/output') / f"reel_{reel.id}_captions.srt"
+            srt_output_path = Path('./data/output') / f"reel_{row.id}_captions.srt"
             caption_generator = CaptionGenerator(words_per_minute=150)
             srt_success = caption_generator.generate_srt_captions(
                 script=structured_script.narration,
@@ -517,7 +517,7 @@ class ReelService:
             )
             if not srt_success:
                 # If caption generation fails, mark as failed
-                self.repository.update(reel, ReelItemUpdate(status=ReelStatus.FAILED.value))
+                self.repository.update(row, ReelItemUpdate(status=ReelStatus.FAILED.value))
                 self.db.commit()
                 return None
             # Read the generated SRT content
@@ -1182,7 +1182,7 @@ class ReelService:
                 self.db.commit()
                 return None
             # Generate SRT captions from narration
-            srt_output_path = Path('./data/output') / f"reel_{reel.id}_captions.srt"
+            srt_output_path = Path('./data/output') / f"reel_{row.id}_captions.srt"
             caption_generator = CaptionGenerator(words_per_minute=150)
             srt_success = caption_generator.generate_srt_captions(
                 script=structured_script.narration,
