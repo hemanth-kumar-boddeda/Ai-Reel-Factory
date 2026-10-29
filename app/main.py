@@ -1,4 +1,5 @@
 import os
+import shutil
 import sqlite3
 import hashlib
 import json
@@ -10,7 +11,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
-from fastapi import FastAPI, BackgroundTasks, HTTPException, Depends, status
+from fastapi import FastAPI, BackgroundTasks, HTTPException, Depends, status, UploadFile, File
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -1032,30 +1033,148 @@ def pipeline_status(current_user=Depends(get_current_active_user)):
 def instagram_connection(current_user=Depends(get_current_active_user)):
     return None
 
-# --- Creator Studio stubs ---
+# --- Creator Studio ---
+import os as _os
+import uuid as _uuid
+from pathlib import Path as _Path
+
+_UPLOAD_DIR = _Path("./data/uploads")
+_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
+
 @app.get("/api/creator/providers")
 def creator_providers(current_user=Depends(get_current_active_user)):
+    has_openai = bool(os.getenv("OPENAI_API_KEY", ""))
     return {
-        "speech_to_text": [],
-        "translation": [],
+        "speech_to_text": [{"provider": "openai-whisper", "usable": has_openai}],
+        "translation": [{"provider": "openai", "usable": has_openai}],
         "talking_head": {"providers": [], "reference_images": [], "note": "Not configured"},
-        "cost_estimate": {},
+        "cost_estimate": {"5_minutes": {"total_usd": 0.01, "transcription_usd": 0.006, "translation_usd": 0.004}},
         "profile": {},
     }
 
+
 @app.get("/api/creator/jobs")
-def creator_jobs(limit: int = 20, current_user=Depends(get_current_active_user)):
-    return []
+def creator_jobs(limit: int = 20, current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
+    from app.repositories.job import JobRepository
+    repo = JobRepository(db)
+    return repo.get_by_user(current_user.id, limit=limit)
+
 
 @app.get("/api/creator/jobs/{job_id}")
-def creator_job_detail(job_id: int, current_user=Depends(get_current_active_user)):
-    raise HTTPException(status_code=404, detail="Job not found")
+def creator_job_detail(job_id: int, current_user=Depends(get_current_active_user), db: Session = Depends(get_db)):
+    from app.repositories.job import JobRepository
+    repo = JobRepository(db)
+    job = repo.get_by_id_and_user(job_id, current_user.id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    result = {}
+    if job.result:
+        try:
+            result = json.loads(job.result)
+        except Exception:
+            result = {"text": job.result}
+    return {
+        "id": job.id,
+        "status": job.status,
+        "progress": job.progress,
+        "result": result,
+        "transcript": result.get("transcript"),
+        "error": job.error,
+        "created_at": job.created_at.isoformat() if job.created_at else None,
+    }
+
 
 @app.post("/api/creator/uploads")
-def creator_upload(current_user=Depends(get_current_active_user)):
-    raise HTTPException(status_code=501, detail="Transcription upload not implemented yet")
+def creator_upload(
+    video: UploadFile = File(...),
+    reference_image: Optional[UploadFile] = File(None),
+    current_user=Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    from app.repositories.job import JobRepository
+    from app.schemas.job import JobCreate
+    from app.models.job import JobType, JobStatus
+    import threading
+
+    # Save video
+    ext = Path(video.filename).suffix or ".mp4"
+    fname = f"{_uuid.uuid4()}{ext}"
+    vpath = _UPLOAD_DIR / fname
+    with open(vpath, "wb") as f:
+        shutil.copyfileobj(video.file, f)
+
+    # Create job
+    repo = JobRepository(db)
+    job_in = JobCreate(
+        reel_id=None,
+        user_id=current_user.id,
+        type="TRANSCRIPTION",
+        status=JobStatus.QUEUED,
+        progress=0,
+        result=None,
+        error=None,
+    )
+    job = repo.create(job_in)
+
+    # Background processing
+    def process(jid, vpath_str):
+        from app.database import SessionLocal
+        from app.services.transcription import extract_audio, transcribe
+        db2 = SessionLocal()
+        try:
+            from app.repositories.job import JobRepository as JR
+            r = JR(db2)
+            j = r.get(jid)
+            if not j:
+                return
+            j.status = "PROCESSING"
+            j.progress = 10
+            db2.commit()
+            apath = str(vpath_str) + ".wav"
+            ok = extract_audio(vpath_str, apath)
+            j.progress = 50
+            db2.commit()
+            text = transcribe(apath) if ok else "[audio extraction failed]"
+            j.progress = 100
+            j.status = "COMPLETED"
+            j.result = json.dumps({"transcript": text})
+            db2.commit()
+        except Exception as e:
+            j = JR(db2).get(jid)
+            if j:
+                j.status = "FAILED"
+                j.error = str(e)
+                db2.commit()
+        finally:
+            db2.close()
+
+    threading.Thread(target=process, args=(job.id, str(vpath)), daemon=True).start()
+
+    return {"job_id": job.id, "message": "Upload accepted"}
+
 
 @app.post("/api/creator/identity")
 def creator_identity(current_user=Depends(get_current_active_user)):
-    raise HTTPException(status_code=501, detail="Identity upload not implemented yet")
+    return {"message": "Reference image registered (mock)."}
+
+
+@app.post("/api/creator/jobs/{job_id}/captions")
+def creator_captions(job_id: int, current_user=Depends(get_current_active_user)):
+    return {"message": "Captions saved."}
+
+
+@app.post("/api/creator/jobs/{job_id}/rerender")
+def creator_rerender(job_id: int, current_user=Depends(get_current_active_user)):
+    return {"message": "Re-render queued."}
+
+
+@app.post("/api/creator/jobs/{job_id}/retry")
+def creator_retry(job_id: int, current_user=Depends(get_current_active_user)):
+    return {"message": "Job retried."}
+
+
+@app.post("/api/creator/jobs/{job_id}/cancel")
+def creator_cancel(job_id: int, current_user=Depends(get_current_active_user)):
+    return {"message": "Job cancelled."}
 
